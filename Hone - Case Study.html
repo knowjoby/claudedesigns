@@ -1,0 +1,2039 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>hone — case study</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=JetBrains+Mono:wght@400;500&family=Shippori+Mincho+B1:wght@400;500;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:        #efe8dc;
+    --bg-deep:   #e7dfd0;
+    --bg-darker: #1c1a17;
+    --ink:       #1a1a1a;
+    --ink-60:    rgba(26,26,26,.66);
+    --ink-40:    rgba(26,26,26,.50);
+    --ink-20:    rgba(26,26,26,.22);
+    --ink-10:    rgba(26,26,26,.10);
+    --rule:      rgba(26,26,26,.14);
+
+    --copper:    #b06a3b;
+    --green:     #2f5a44;
+    --wine:      #8b2e3a;
+    --honey:     #a87332;
+    --indigo:    #3d4a7a;
+    --accent:    var(--copper);
+    --accent-ink:#7e4a25;
+
+    --serif:     "Instrument Serif", "Shippori Mincho B1", serif;
+    --sans:      "DM Sans", "Noto Sans JP", system-ui, sans-serif;
+    --mono:      "JetBrains Mono", ui-monospace, monospace;
+    --jp-serif:  "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", serif;
+    --jp-sans:   "Noto Sans JP", "Hiragino Kaku Gothic ProN", sans-serif;
+
+    --maxw:      1320px;
+    --gutter:    clamp(24px, 4vw, 64px);
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; background:var(--bg); color:var(--ink); }
+  body{
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    text-wrap:pretty;
+    background-image:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.08 0 0 0 0 0.06 0 0 0 0.05 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+  a{ color:inherit; text-decoration:none; }
+  ::selection{ background:var(--copper); color:var(--bg); }
+
+  .wrap{ max-width:var(--maxw); margin:0 auto; padding-left:var(--gutter); padding-right:var(--gutter); }
+  .wrap-wide{ max-width:1600px; margin:0 auto; padding-left:var(--gutter); padding-right:var(--gutter); }
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--ink-60);
+  }
+  .eyebrow .dot{
+    display:inline-block; width:6px; height:6px; border-radius:50%;
+    background:var(--copper); margin-right:8px; vertical-align:1px;
+  }
+  .eyebrow .jp{
+    font-family:var(--jp-serif); letter-spacing:.16em; text-transform:none;
+    color:var(--ink); margin-right:10px; padding-right:10px;
+    border-right:1px solid var(--ink-20);
+  }
+
+  .chapter{
+    font-family:var(--mono);
+    font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--ink-40);
+  }
+
+  /* photo wrapper with onerror fallback */
+  .ph{ position:relative; background:var(--bg-deep); overflow:hidden; }
+  .ph img{ width:100%; height:100%; object-fit:cover; display:block; filter:saturate(.92) contrast(1.02); }
+  .ph[data-fallback="on"] img{ display:none; }
+  .ph[data-fallback="on"]::after{
+    content:attr(data-placeholder);
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    padding:24px; text-align:center;
+    font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-40);
+  }
+
+  /* ╳╳╳ TOP BAR ╳╳╳ */
+  .top{
+    border-bottom:1px solid var(--rule);
+    background:color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter:blur(8px);
+    position:sticky; top:0; z-index:20;
+  }
+  .top .wrap{ display:flex; justify-content:space-between; align-items:baseline; padding:20px 0; }
+  .top .crumbs{
+    display:flex; gap:14px; align-items:baseline;
+    font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-60);
+  }
+  .top .crumbs a{ color:var(--ink); }
+  .top .crumbs a:hover{ color:var(--copper); }
+  .top .crumbs span.sep{ color:var(--ink-20); }
+  .top .meta{
+    font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-60);
+  }
+  .top .meta strong{ color:var(--ink); font-weight:500; }
+
+  /* ╳╳╳ COVER ╳╳╳ */
+  .cover{ padding:72px 0 56px; }
+  .cover-head{
+    display:grid; grid-template-columns: 1.2fr 1fr;
+    gap:48px; align-items:end; margin-bottom:48px;
+  }
+  .cover h1{
+    font-family:var(--serif); font-weight:400;
+    font-size:clamp(72px, 9vw, 156px);
+    line-height:.98; letter-spacing:-.015em;
+    margin:24px 0 0;
+  }
+  .cover h1 em{ font-style:italic; color:var(--accent-ink); }
+  .cover h1 .jp{
+    display:block;
+    font-family:var(--jp-serif); font-size:.32em; color:var(--ink-60);
+    margin-top:24px; letter-spacing:.1em; line-height:1.4;
+  }
+  .cover-sub{
+    font-family:var(--serif); font-style:italic;
+    font-size:clamp(22px, 2.2vw, 32px);
+    color:var(--ink-60); line-height:1.35;
+    max-width:34ch;
+  }
+  .cover-meta{
+    display:grid; grid-template-columns: repeat(4, 1fr);
+    gap:32px;
+    padding:28px 0; border-top:1px solid var(--rule); border-bottom:1px solid var(--rule);
+    margin-bottom:48px;
+  }
+  .cover-meta dt{
+    font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--ink-60); margin-bottom:6px;
+  }
+  .cover-meta dd{
+    margin:0; font-family:var(--serif); font-size:22px; line-height:1.2;
+  }
+  .cover-meta dd .small{ font-family:var(--sans); font-size:13px; color:var(--ink-60); display:block; margin-top:2px; letter-spacing:0; }
+
+  .cover-hero{
+    aspect-ratio: 16/9;
+    width:100%;
+  }
+
+  /* ╳╳╳ SECTION ╳╳╳ */
+  section{ padding:120px 0; }
+  .section-head{
+    display:grid; grid-template-columns: 220px 1fr;
+    gap:40px; align-items:start; margin-bottom:64px;
+  }
+  .section-head .num{
+    font-family:var(--serif); font-size:74px; line-height:.9;
+    color:var(--ink); letter-spacing:-.02em;
+  }
+  .section-head .num .small{
+    display:block; font-family:var(--mono); font-size:11px; letter-spacing:.22em;
+    color:var(--ink-40); text-transform:uppercase; margin-bottom:14px;
+  }
+  .section-head h2{
+    font-family:var(--serif); font-weight:400;
+    font-size:clamp(40px, 4.6vw, 64px); line-height:1.05;
+    margin:0 0 18px; letter-spacing:-.01em; max-width:18ch;
+  }
+  .section-head h2 em{ font-style:italic; color:var(--accent-ink); }
+  .section-head .lede{
+    font-size:18px; color:var(--ink-60); max-width:54ch; margin:0;
+    line-height:1.6;
+  }
+
+  /* ── brief grid */
+  .brief-grid{
+    display:grid; grid-template-columns: 1fr 1fr; gap:48px;
+    margin-bottom:64px;
+  }
+  .brief-grid .quote{
+    font-family:var(--serif); font-style:italic;
+    font-size:clamp(26px, 2.6vw, 34px);
+    line-height:1.3; margin:0;
+    color:var(--ink);
+  }
+  .brief-grid .quote::before{
+    content:""; display:block; width:48px; height:1px; background:var(--copper);
+    margin-bottom:24px;
+  }
+  .brief-grid .quote cite{
+    display:block; font-style:normal;
+    font-family:var(--mono); font-size:11px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--ink-60);
+    margin-top:24px;
+  }
+  .brief-grid .body{
+    font-size:17px; line-height:1.7; color:var(--ink); max-width:46ch;
+  }
+  .brief-grid .body p{ margin:0 0 18px; }
+  .brief-grid .body p:last-child{ margin-bottom:0; }
+
+  .stats{
+    display:grid; grid-template-columns: repeat(4, 1fr); gap:0;
+    border-top:1px solid var(--rule); border-bottom:1px solid var(--rule);
+  }
+  .stats > div{
+    padding:32px 24px 28px;
+    border-right:1px solid var(--rule);
+  }
+  .stats > div:last-child{ border-right:none; }
+  .stats .n{
+    font-family:var(--serif); font-size:64px; line-height:1; letter-spacing:-.02em;
+  }
+  .stats .n em{ font-style:italic; color:var(--accent-ink); }
+  .stats .lbl{
+    margin-top:14px; font-family:var(--mono); font-size:11px;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--ink-60);
+  }
+  .stats .lbl .jp{
+    display:block; font-family:var(--jp-serif); color:var(--ink); text-transform:none;
+    letter-spacing:.08em; margin-bottom:4px; font-size:13px;
+  }
+
+  /* ── identity */
+  section.identity{ background:var(--bg-deep); }
+
+  .logo-block{
+    display:grid; grid-template-columns: 1fr 1fr;
+    gap:48px; margin-bottom:80px;
+    align-items:center;
+  }
+  .logo-card{
+    aspect-ratio: 4/3;
+    background:var(--bg);
+    border:1px solid var(--ink-10);
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:14px;
+    position:relative;
+  }
+  .logo-card .mark{
+    font-family:var(--jp-serif); font-size:clamp(140px, 18vw, 240px);
+    line-height:1; color:var(--ink);
+  }
+  .logo-card .wordmark{
+    font-family:var(--serif); font-size:clamp(38px, 4vw, 54px); line-height:1;
+    letter-spacing:.01em;
+  }
+  .logo-card .tag{
+    font-family:var(--jp-serif); font-size:14px; color:var(--ink-60);
+    letter-spacing:.2em;
+  }
+  .logo-card .corner{
+    position:absolute; top:14px; right:14px;
+    font-family:var(--mono); font-size:10px; letter-spacing:.16em;
+    color:var(--ink-40); text-transform:uppercase;
+  }
+
+  .logo-notes h3{
+    font-family:var(--serif); font-weight:400;
+    font-size:clamp(28px, 3vw, 42px); line-height:1.1;
+    margin:0 0 20px; letter-spacing:-.005em;
+  }
+  .logo-notes h3 em{ font-style:italic; color:var(--accent-ink); }
+  .logo-notes p{ font-size:16px; line-height:1.7; color:var(--ink); max-width:42ch; margin:0 0 14px; }
+  .logo-notes .kanji-note{
+    margin-top:24px; padding-top:24px; border-top:1px solid var(--rule);
+    display:grid; grid-template-columns: auto 1fr; gap:18px; align-items:center;
+  }
+  .logo-notes .kanji-note .glyph{
+    font-family:var(--jp-serif); font-size:64px; line-height:1; color:var(--copper);
+  }
+  .logo-notes .kanji-note .text{ font-size:14px; color:var(--ink-60); line-height:1.5; }
+  .logo-notes .kanji-note .text strong{ color:var(--ink); font-weight:500; }
+
+  /* logo variants strip */
+  .logo-variants{
+    display:grid; grid-template-columns: repeat(4, 1fr); gap:18px;
+    margin-bottom:64px;
+  }
+  .lv{
+    aspect-ratio: 1/1;
+    border:1px solid var(--ink-10);
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:6px; padding:24px;
+    position:relative;
+  }
+  .lv.cream{ background:var(--bg); color:var(--ink); }
+  .lv.dark{ background:var(--ink); color:var(--bg); }
+  .lv.copper{ background:var(--copper); color:var(--bg); }
+  .lv.green{ background:var(--green); color:var(--bg); }
+  .lv .mark{ font-family:var(--jp-serif); font-size:64px; line-height:1; }
+  .lv .word{ font-family:var(--serif); font-size:22px; }
+  .lv .corner{
+    position:absolute; bottom:12px; left:12px;
+    font-family:var(--mono); font-size:9px; letter-spacing:.18em;
+    text-transform:uppercase; opacity:.7;
+  }
+
+  /* palette */
+  .palette-head{
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-bottom:24px; padding-bottom:18px; border-bottom:1px solid var(--rule);
+  }
+  .palette-head h4{
+    font-family:var(--serif); font-weight:400; font-size:32px; margin:0;
+    letter-spacing:-.005em;
+  }
+  .palette-head .note{ font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-60); }
+
+  .palette{
+    display:grid; grid-template-columns: repeat(5, 1fr); gap:20px;
+    margin-bottom:48px;
+  }
+  .swatch{
+    display:flex; flex-direction:column;
+  }
+  .swatch .chip{
+    aspect-ratio: 1/1;
+    border:1px solid var(--ink-10);
+    position:relative;
+  }
+  .swatch .chip .num{
+    position:absolute; top:14px; left:14px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.14em; color:rgba(255,255,255,.65);
+  }
+  .swatch .chip .hex{
+    position:absolute; bottom:14px; left:14px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.06em; color:rgba(255,255,255,.85);
+  }
+  .swatch .chip.light .num,
+  .swatch .chip.light .hex{ color:var(--ink-60); }
+  .swatch .label{
+    margin-top:12px;
+  }
+  .swatch .label .name{ font-family:var(--serif); font-size:20px; line-height:1.2; }
+  .swatch .label .bean{
+    font-family:var(--mono); font-size:10px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--ink-60); margin-top:4px;
+  }
+  .swatch .label .bean .jp{ font-family:var(--jp-serif); text-transform:none; color:var(--ink); letter-spacing:.06em; margin-right:6px; }
+
+  /* type system */
+  .type-grid{
+    display:grid; grid-template-columns: repeat(3, 1fr); gap:24px;
+    margin-top:48px;
+  }
+  .type-card{
+    background:var(--bg); padding:36px 32px;
+    border:1px solid var(--ink-10);
+    display:flex; flex-direction:column; gap:20px;
+  }
+  .type-card .sample{
+    font-size:80px; line-height:.95; letter-spacing:-.01em;
+    color:var(--ink);
+  }
+  .type-card .sample em{ font-style:italic; color:var(--accent-ink); }
+  .type-card .info{
+    font-family:var(--mono); font-size:10px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--ink-60);
+    padding-top:16px; border-top:1px solid var(--rule);
+    display:grid; grid-template-columns: auto 1fr; gap:6px 16px;
+  }
+  .type-card .info strong{ color:var(--ink); font-weight:500; }
+  .type-card .role{
+    font-family:var(--serif); font-style:italic; font-size:18px;
+    color:var(--ink-60);
+  }
+
+  .type-card.serif .sample{ font-family:var(--serif); font-size:96px; }
+  .type-card.jp-serif .sample{ font-family:var(--jp-serif); font-size:84px; letter-spacing:0; }
+  .type-card.sans .sample{ font-family:var(--sans); font-size:60px; font-weight:400; letter-spacing:-.01em; }
+
+  /* ── in context (big photos) */
+  .context-row{
+    display:grid; grid-template-columns: 1fr 1fr; gap:24px;
+    margin-bottom:24px;
+  }
+  .context-row.wide{ grid-template-columns: 1.4fr 1fr; }
+  .context-row.tall{ grid-template-columns: 1fr 1.4fr; }
+  .context-photo{ aspect-ratio: 4/3; }
+  .context-photo.portrait{ aspect-ratio: 3/4; }
+  .context-photo.bleed{ grid-column: 1 / -1; aspect-ratio: 21/9; }
+
+  .photo-caption{
+    margin-top:14px;
+    display:flex; justify-content:space-between; gap:24px;
+    font-family:var(--mono); font-size:10px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--ink-60);
+  }
+  .photo-caption .num{ color:var(--ink-40); }
+  .photo-caption .jp{ font-family:var(--jp-serif); letter-spacing:.12em; text-transform:none; color:var(--ink); }
+
+  /* ── instagram mockup */
+  section.instagram{ background:var(--ink); color:var(--bg); }
+  section.instagram .section-head .num,
+  section.instagram .section-head h2,
+  section.instagram .section-head .lede{ color:var(--bg); }
+  section.instagram .section-head h2 em{ color:var(--copper); }
+  section.instagram .section-head .lede{ color:color-mix(in srgb, var(--bg) 70%, transparent); }
+  section.instagram .section-head .num .small,
+  section.instagram .chapter{ color:color-mix(in srgb, var(--bg) 50%, transparent); }
+
+  .ig-device{
+    max-width:380px; margin:0 auto;
+    background:#0e0d0b;
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:36px;
+    padding:14px;
+  }
+  .ig-frame{
+    background:#0e0d0b; border-radius:24px; overflow:hidden;
+    color:var(--bg);
+    font-family:var(--sans);
+  }
+  .ig-status{
+    display:flex; justify-content:space-between; padding:14px 22px 8px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.08em;
+    color:rgba(255,255,255,.85);
+  }
+  .ig-topbar{
+    display:flex; align-items:center; gap:12px;
+    padding:12px 18px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .ig-topbar .ig-avatar{
+    width:36px; height:36px; border-radius:50%;
+    background:var(--copper);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--jp-serif); font-size:20px; color:var(--bg);
+  }
+  .ig-topbar .ig-handle{ font-size:14px; font-weight:500; }
+  .ig-topbar .ig-handle small{ display:block; font-weight:400; font-size:11px; color:rgba(255,255,255,.5); margin-top:2px; }
+  .ig-topbar .dots{ margin-left:auto; color:rgba(255,255,255,.5); }
+
+  .ig-post + .ig-post{ border-top:1px solid rgba(255,255,255,.06); }
+  .ig-post-img{ aspect-ratio: 1/1; }
+  .ig-post-actions{ display:flex; gap:14px; padding:10px 14px; font-size:18px; }
+  .ig-post-actions .save{ margin-left:auto; }
+  .ig-post-caption{
+    padding:0 14px 14px;
+    font-size:13px; line-height:1.5; color:rgba(255,255,255,.86);
+  }
+  .ig-post-caption b{ font-weight:500; color:var(--bg); }
+  .ig-post-caption .tag{ color:var(--copper); }
+  .ig-post-caption .time{
+    display:block; margin-top:8px;
+    font-family:var(--mono); font-size:10px; letter-spacing:.14em;
+    text-transform:uppercase; color:rgba(255,255,255,.4);
+  }
+
+  .ig-side{
+    display:flex; flex-direction:column; gap:32px;
+  }
+  .ig-side h3{
+    font-family:var(--serif); font-weight:400;
+    font-size:clamp(32px, 3.4vw, 48px); line-height:1.1;
+    margin:0; letter-spacing:-.01em;
+  }
+  .ig-side h3 em{ font-style:italic; color:var(--copper); }
+  .ig-side p{
+    color:color-mix(in srgb, var(--bg) 70%, transparent);
+    font-size:16px; line-height:1.7; max-width:38ch; margin:0;
+  }
+  .ig-pillars{
+    margin-top:8px;
+    border-top:1px solid rgba(255,255,255,.12);
+  }
+  .ig-pillars .row{
+    display:grid; grid-template-columns: 32px 1fr auto;
+    gap:24px; align-items:baseline;
+    padding:16px 0; border-bottom:1px solid rgba(255,255,255,.12);
+  }
+  .ig-pillars .n{
+    font-family:var(--mono); font-size:11px; letter-spacing:.14em; color:rgba(255,255,255,.45);
+  }
+  .ig-pillars .name{
+    font-family:var(--serif); font-size:22px;
+  }
+  .ig-pillars .name em{ font-style:italic; color:color-mix(in srgb, var(--bg) 60%, transparent); }
+  .ig-pillars .pct{
+    font-family:var(--mono); font-size:11px; letter-spacing:.12em; color:var(--copper);
+  }
+
+  .ig-grid{
+    display:grid; grid-template-columns: 1fr 1fr;
+    gap:64px; align-items:start;
+  }
+
+  /* ── packaging */
+  section.pack{ background:var(--bg-deep); }
+  .pack-grid{
+    display:grid; grid-template-columns: 1fr 1fr; gap:24px;
+  }
+  .pack-photo{ aspect-ratio: 4/5; }
+  .pack-spec{
+    aspect-ratio: 4/5;
+    background:var(--bg); padding:40px;
+    border:1px solid var(--ink-10);
+    display:flex; flex-direction:column;
+  }
+  .pack-spec .pkg-head{ display:flex; justify-content:space-between; font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-60); }
+  .pack-spec .stamp{
+    margin:40px auto;
+    width:160px; height:160px; border-radius:50%;
+    border:1px solid var(--copper);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    color:var(--copper);
+    text-align:center;
+  }
+  .pack-spec .stamp .glyph{ font-family:var(--jp-serif); font-size:48px; line-height:1; }
+  .pack-spec .stamp .lbl{ font-family:var(--mono); font-size:10px; letter-spacing:.2em; margin-top:6px; }
+  .pack-spec .stamp .week{ font-family:var(--jp-serif); font-size:11px; letter-spacing:.14em; margin-top:6px; }
+  .pack-spec .pkg-title{
+    text-align:center;
+    font-family:var(--serif); font-size:38px; line-height:1; margin-top:auto;
+  }
+  .pack-spec .pkg-title em{ font-style:italic; color:var(--accent-ink); }
+  .pack-spec .pkg-title .jp{ display:block; font-family:var(--jp-serif); font-size:14px; color:var(--ink-60); margin-top:8px; letter-spacing:.16em; }
+  .pack-spec .pkg-specs{
+    margin-top:24px; padding-top:18px; border-top:1px solid var(--rule);
+    display:grid; grid-template-columns: 1fr 1fr; gap:8px 18px;
+    font-family:var(--mono); font-size:10px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--ink-60);
+  }
+  .pack-spec .pkg-specs strong{ color:var(--ink); font-weight:500; }
+
+  /* ── closing */
+  section.outro{ padding-bottom:160px; }
+  .outro-grid{
+    display:grid; grid-template-columns: 1.2fr 1fr;
+    gap:64px; align-items:end;
+  }
+  .outro h2{
+    font-family:var(--serif); font-weight:400;
+    font-size:clamp(56px, 6.4vw, 96px);
+    line-height:1.02; letter-spacing:-.015em;
+    margin:0 0 24px;
+  }
+  .outro h2 em{ font-style:italic; color:var(--accent-ink); }
+  .outro .quote-jp{
+    font-family:var(--jp-serif); font-size:22px; color:var(--ink-60);
+    letter-spacing:.06em; line-height:1.8; margin:0 0 32px;
+  }
+  .outro .links a{
+    display:inline-flex; align-items:center; gap:12px;
+    padding:14px 22px; background:var(--ink); color:var(--bg);
+    border-radius:999px; font-size:13px; letter-spacing:.06em;
+    margin-right:12px;
+    transition:background .2s ease;
+  }
+  .outro .links a:hover{ background:var(--copper); }
+  .outro .links a.ghost{ background:transparent; color:var(--ink); border:1px solid var(--ink); }
+  .outro .links a.ghost:hover{ background:var(--ink); color:var(--bg); }
+  .outro .credits{
+    font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-60);
+  }
+  .outro .credits .row{
+    display:grid; grid-template-columns: 110px 1fr;
+    padding:10px 0; border-bottom:1px solid var(--rule);
+    gap:14px;
+  }
+  .outro .credits .row dt{ color:var(--ink); }
+
+  footer.foot{
+    border-top:1px solid var(--rule);
+    padding:36px 0;
+  }
+  footer .wrap{ display:flex; justify-content:space-between; gap:24px;
+    font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-40);
+  }
+  footer .brand{
+    font-family:var(--serif); text-transform:none; letter-spacing:0;
+    font-size:18px; color:var(--ink);
+  }
+  footer .brand .kanji{ font-family:var(--jp-serif); margin-right:6px; color:var(--copper); }
+
+  /* ╳╳╳ MOODBOARD ╳╳╳ */
+  section.moodboard{ background:var(--bg-darker); color:var(--bg); }
+  section.moodboard .section-head .num,
+  section.moodboard .section-head h2,
+  section.moodboard .section-head .lede{ color:var(--bg); }
+  section.moodboard .section-head .lede{ color:color-mix(in srgb, var(--bg) 70%, transparent); }
+  section.moodboard .section-head h2 em{ color:var(--copper); }
+  section.moodboard .section-head .num .small,
+  section.moodboard .chapter{ color:color-mix(in srgb, var(--bg) 50%, transparent); }
+  section.moodboard .eyebrow{ color:color-mix(in srgb, var(--bg) 70%, transparent); }
+  section.moodboard .eyebrow .jp{ color:var(--bg); border-color:rgba(255,255,255,.18); }
+
+  .moodboard-grid{
+    display:grid;
+    grid-template-columns:repeat(12, 1fr);
+    grid-auto-rows:90px;
+    gap:14px;
+  }
+  .mb{
+    position:relative;
+    overflow:hidden;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+  }
+  .mb img{ width:100%; height:100%; object-fit:cover; display:block; filter:saturate(.9) contrast(1.05); }
+  .mb[data-fallback="on"] img{ display:none; }
+  .mb[data-fallback="on"]::before{
+    content:attr(data-placeholder);
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    padding:24px; text-align:center;
+    font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+    color:rgba(255,255,255,.45);
+  }
+  .mb-text{
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    text-align:center; padding:24px; gap:12px;
+    color:var(--bg);
+  }
+  .mb-text.left{ align-items:flex-start; text-align:left; }
+  .mb-text .glyph{
+    font-family:var(--jp-serif);
+    font-size:clamp(80px, 8vw, 160px);
+    line-height:.95;
+    color:var(--copper);
+  }
+  .mb-text .glyph.cream{ color:var(--bg); }
+  .mb-text .quote{
+    font-family:var(--serif); font-style:italic;
+    font-size:clamp(20px, 2vw, 30px); line-height:1.3;
+    max-width:24ch;
+  }
+  .mb-text .quote em{ color:var(--copper); font-style:italic; }
+  .mb-text .lbl{
+    font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+    color:rgba(255,255,255,.5);
+  }
+  .mb-text .jp-note{
+    font-family:var(--jp-serif); font-size:16px; color:rgba(255,255,255,.75);
+    letter-spacing:.08em;
+  }
+  .mb-tag{
+    position:absolute; top:12px; left:12px;
+    font-family:var(--mono); font-size:9px; letter-spacing:.18em; text-transform:uppercase;
+    color:rgba(255,255,255,.75);
+    padding:4px 8px;
+    background:rgba(0,0,0,.4);
+    z-index:2;
+  }
+  .mb-num{
+    position:absolute; top:12px; right:12px;
+    font-family:var(--mono); font-size:9px; letter-spacing:.14em;
+    color:rgba(255,255,255,.45);
+    z-index:2;
+  }
+  .mb-swatches{ display:flex; }
+  .mb-swatches .s{ flex:1; display:flex; align-items:flex-end; padding:14px; font-family:var(--mono); font-size:9px; letter-spacing:.1em; color:rgba(255,255,255,.7); }
+
+  /* moodboard span helpers */
+  .col-3{ grid-column:span 3; } .col-4{ grid-column:span 4; }
+  .col-5{ grid-column:span 5; } .col-6{ grid-column:span 6; }
+  .col-7{ grid-column:span 7; } .col-8{ grid-column:span 8; }
+  .row-2{ grid-row:span 2; } .row-3{ grid-row:span 3; }
+  .row-4{ grid-row:span 4; } .row-5{ grid-row:span 5; }
+
+  /* ╳╳╳ SIGNAGE ╳╳╳ */
+  section.signage{ background:var(--bg-deep); }
+  .sign-grid{
+    display:grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap:32px;
+    margin-bottom:32px;
+  }
+  .sign-cell{
+    position:relative;
+    background:var(--bg);
+    border:1px solid var(--ink-10);
+    overflow:hidden;
+  }
+  .sign-cell .corner{
+    position:absolute; top:14px; left:14px;
+    font-family:var(--mono); font-size:10px; letter-spacing:.16em;
+    color:var(--ink-40); text-transform:uppercase;
+    padding:4px 10px;
+    background:color-mix(in srgb, var(--bg) 80%, transparent);
+    z-index:2;
+  }
+
+  /* noren */
+  .noren-stage{
+    aspect-ratio: 4/3;
+    background:
+      radial-gradient(120% 60% at 50% 0%, #5a4a3a 0%, #3a2e22 60%, #221b14 100%);
+    display:flex; align-items:flex-start; justify-content:center;
+    padding-top:0; position:relative;
+  }
+  .noren-stage::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:18%;
+    background:linear-gradient(to bottom, rgba(0,0,0,.5), rgba(0,0,0,0));
+  }
+  .noren-rod{
+    position:absolute; top:14%; left:14%; right:14%; height:6px;
+    background:linear-gradient(to bottom, #8a6b4a, #5e4530);
+    border-radius:3px;
+    box-shadow:0 1px 0 rgba(0,0,0,.4), 0 4px 8px rgba(0,0,0,.4);
+  }
+  .noren{
+    position:absolute; top:calc(14% + 6px); left:18%; right:18%; bottom:14%;
+    display:grid; grid-template-columns: 1fr 1fr 1fr;
+    gap:6px;
+  }
+  .noren-panel{
+    background:#efe8dc;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(0,0,0,.04) 0 2px, transparent 2px 6px),
+      linear-gradient(to bottom, #efe8dc, #d8cdb6 95%, #c8bba1);
+    box-shadow:0 4px 14px rgba(0,0,0,.3);
+    display:flex; flex-direction:column; align-items:center; padding-top:18%;
+    color:#1a1a1a;
+  }
+  .noren-panel .kanji{
+    font-family:var(--jp-serif);
+    font-size:clamp(40px, 5vw, 80px);
+    line-height:1;
+    color:#1a1a1a;
+  }
+  .noren-panel.center .kanji{ color:var(--copper); }
+  .noren-panel .word{
+    font-family:var(--serif);
+    font-size:14px;
+    margin-top:8px;
+    letter-spacing:.04em;
+    color:var(--ink-60);
+  }
+
+  /* wooden hanging sign */
+  .wood-stage{
+    aspect-ratio: 4/5;
+    background:
+      linear-gradient(to bottom, #2a241a 0%, #181410 100%);
+    position:relative;
+    display:flex; align-items:flex-start; justify-content:center;
+  }
+  .wood-rope{
+    position:absolute; top:0; left:50%; width:2px; height:14%;
+    background:#3d3327; transform:translateX(-50%);
+  }
+  .wood-rope::before, .wood-rope::after{
+    content:""; position:absolute; left:50%; width:14px; height:14px;
+    border:1.5px solid #5e4a32; border-radius:50%;
+    transform:translateX(-50%);
+  }
+  .wood-rope::before{ top:14%; }
+  .wood-rope::after{ top:auto; bottom:-7px; }
+  .wood-sign{
+    margin-top:18%;
+    width:60%;
+    background:
+      repeating-linear-gradient(90deg, rgba(0,0,0,.06) 0 3px, transparent 3px 22px),
+      linear-gradient(to bottom, #d9c39e 0%, #b89a73 50%, #8a6b4a 100%);
+    padding:24px 12px 22px;
+    box-shadow:
+      inset 0 -3px 0 rgba(0,0,0,.18),
+      inset 0 3px 0 rgba(255,255,255,.18),
+      0 22px 36px rgba(0,0,0,.4);
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    color:#1a1a1a;
+    border-radius:2px;
+    position:relative;
+  }
+  .wood-sign::before, .wood-sign::after{
+    content:""; position:absolute; top:-6px; width:4px; height:18px;
+    background:#5e4a32; border-radius:2px;
+  }
+  .wood-sign::before{ left:18%; }
+  .wood-sign::after{ right:18%; }
+  .wood-sign .kanji{
+    font-family:var(--jp-serif);
+    font-size:clamp(60px, 7vw, 110px);
+    line-height:1;
+    color:#1a1a1a;
+  }
+  .wood-sign .word{
+    font-family:var(--serif); font-size:24px; letter-spacing:.02em;
+    color:#1a1a1a;
+  }
+  .wood-sign .est{
+    margin-top:8px;
+    font-family:var(--jp-serif); font-size:11px; letter-spacing:.18em;
+    color:rgba(0,0,0,.55);
+  }
+
+  /* hours plaque */
+  .hours-stage{
+    aspect-ratio: 1/1;
+    display:flex; align-items:center; justify-content:center;
+    padding:32px;
+    background:
+      radial-gradient(80% 60% at 50% 40%, #ece3d2, #d4c8ad);
+  }
+  .hours-card{
+    width:100%; max-width:280px;
+    background:#efe8dc;
+    border:1px solid var(--copper);
+    padding:24px 22px;
+    text-align:center;
+    box-shadow:0 18px 24px rgba(0,0,0,.18);
+  }
+  .hours-card .glyph{
+    font-family:var(--jp-serif); font-size:44px; color:var(--copper); line-height:1;
+  }
+  .hours-card .name{
+    font-family:var(--serif); font-size:22px; margin-top:6px; letter-spacing:.02em;
+  }
+  .hours-card hr{
+    border:0; height:1px; background:var(--ink-20); margin:18px 0;
+  }
+  .hours-card dl{
+    margin:0; display:grid; grid-template-columns: 1fr 1fr; gap:8px 12px;
+    font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--ink-60);
+  }
+  .hours-card dt{ text-align:right; color:var(--ink); }
+  .hours-card dd{ text-align:left; margin:0; }
+  .hours-card .closed{
+    margin-top:18px;
+    font-family:var(--jp-serif); font-style:normal; font-size:14px;
+    color:var(--copper); letter-spacing:.16em;
+  }
+
+  /* business card */
+  .card-stage{
+    aspect-ratio: 4/3;
+    display:flex; align-items:center; justify-content:center;
+    padding:32px; gap:18px;
+    background:linear-gradient(135deg, #2a261d 0%, #15120e 100%);
+    flex-wrap:wrap;
+  }
+  .card{
+    width:44%; aspect-ratio: 1.75/1;
+    padding:18px 20px;
+    background:#efe8dc;
+    box-shadow:0 18px 28px rgba(0,0,0,.4);
+    display:flex; flex-direction:column; justify-content:space-between;
+    position:relative;
+  }
+  .card.back{ background:var(--ink); color:var(--bg); }
+  .card .top-row{ display:flex; justify-content:space-between; align-items:flex-start; }
+  .card .mark{ font-family:var(--jp-serif); font-size:30px; line-height:1; color:var(--copper); }
+  .card.back .mark{ color:var(--copper); }
+  .card .word{ font-family:var(--serif); font-size:18px; line-height:1; margin-top:6px; }
+  .card .meta{
+    font-family:var(--mono); font-size:8px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--ink-40);
+  }
+  .card.back .meta{ color:rgba(255,255,255,.4); }
+  .card .name{ font-family:var(--serif); font-size:14px; line-height:1.2; }
+  .card .role{ font-family:var(--mono); font-size:8px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-60); margin-top:2px; }
+  .card .contact{ font-family:var(--mono); font-size:8px; letter-spacing:.06em; color:var(--ink-60); line-height:1.6; }
+  .card.back .quote{
+    font-family:var(--jp-serif); font-size:20px; color:var(--bg);
+    letter-spacing:.16em; align-self:center; text-align:center; line-height:1.5;
+  }
+  .card.back .quote em{
+    font-family:var(--serif); font-style:italic; font-size:13px; color:rgba(255,255,255,.55);
+    display:block; margin-top:8px; letter-spacing:0;
+  }
+
+  /* ╳╳╳ MENU ╳╳╳ */
+  section.menu{ background:var(--ink); color:var(--bg); padding-bottom:140px; }
+  section.menu .section-head .num,
+  section.menu .section-head h2,
+  section.menu .section-head .lede{ color:var(--bg); }
+  section.menu .section-head .lede{ color:color-mix(in srgb, var(--bg) 70%, transparent); }
+  section.menu .section-head h2 em{ color:var(--copper); }
+  section.menu .section-head .num .small,
+  section.menu .chapter{ color:color-mix(in srgb, var(--bg) 50%, transparent); }
+  section.menu .eyebrow{ color:color-mix(in srgb, var(--bg) 70%, transparent); }
+  section.menu .eyebrow .jp{ color:var(--bg); border-color:rgba(255,255,255,.18); }
+
+  .menu-stage{
+    display:grid; grid-template-columns: 1.4fr 1fr;
+    gap:48px; align-items:start;
+  }
+  .menu-card{
+    background:var(--bg);
+    color:var(--ink);
+    padding:64px 56px 56px;
+    aspect-ratio: 1/1.414;
+    position:relative;
+    box-shadow:
+      0 60px 80px -40px rgba(0,0,0,.6),
+      0 20px 40px -20px rgba(0,0,0,.4);
+    background-image:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.08 0 0 0 0 0.06 0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+  .menu-card .menu-head{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    padding-bottom:24px;
+    border-bottom:1px solid var(--ink);
+  }
+  .menu-card .menu-head .mark{ font-family:var(--jp-serif); font-size:48px; line-height:1; color:var(--ink); }
+  .menu-card .menu-head .wmark{ font-family:var(--serif); font-size:34px; margin-top:0; }
+  .menu-card .menu-head .meta{
+    text-align:right;
+    font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-60); line-height:1.7;
+  }
+  .menu-card .menu-head .meta strong{ color:var(--ink); font-weight:500; }
+  .menu-card h4{
+    font-family:var(--mono); font-size:10px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--ink-60); font-weight:500;
+    margin:32px 0 14px;
+    display:flex; justify-content:space-between;
+  }
+  .menu-card h4 .jp{ font-family:var(--jp-serif); text-transform:none; letter-spacing:.12em; color:var(--ink); }
+  .menu-card .line{
+    display:grid; grid-template-columns: 28px 1fr auto; gap:14px;
+    padding:9px 0;
+    border-bottom:1px dotted var(--ink-20);
+    align-items:baseline;
+  }
+  .menu-card .line:last-child{ border-bottom:0; }
+  .menu-card .line .n{ font-family:var(--mono); font-size:11px; color:var(--ink-40); }
+  .menu-card .line .name{ font-family:var(--serif); font-size:18px; line-height:1.2; }
+  .menu-card .line .name em{ font-style:italic; color:var(--accent-ink); }
+  .menu-card .line .name .desc{
+    display:block;
+    font-family:var(--sans); font-style:normal; font-size:11px; color:var(--ink-60);
+    margin-top:1px; letter-spacing:0;
+  }
+  .menu-card .line .price{ font-family:var(--serif); font-size:18px; }
+  .menu-card .line.featured .n,
+  .menu-card .line.featured .price{ color:var(--copper); }
+  .menu-card .footer-note{
+    margin-top:36px; padding-top:20px;
+    border-top:1px solid var(--ink-20);
+    display:flex; justify-content:space-between; gap:24px;
+    font-family:var(--mono); font-size:9px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-60);
+  }
+
+  .menu-side{
+    color:var(--bg);
+  }
+  .menu-side h3{
+    font-family:var(--serif); font-weight:400;
+    font-size:clamp(32px, 3.8vw, 52px); line-height:1.1;
+    margin:0 0 24px; letter-spacing:-.005em;
+  }
+  .menu-side h3 em{ font-style:italic; color:var(--copper); }
+  .menu-side p{
+    color:color-mix(in srgb, var(--bg) 70%, transparent);
+    font-size:16px; line-height:1.7; max-width:42ch; margin:0 0 18px;
+  }
+  .menu-side .specs{
+    margin-top:32px; padding-top:24px;
+    border-top:1px solid rgba(255,255,255,.14);
+    display:grid; grid-template-columns: 1fr 1fr; gap:18px 32px;
+  }
+  .menu-side .specs > div{
+    font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+    color:rgba(255,255,255,.55);
+  }
+  .menu-side .specs > div strong{
+    display:block; font-family:var(--serif); font-style:italic; font-size:22px; text-transform:none;
+    color:var(--bg); letter-spacing:0; margin-top:6px;
+  }
+
+  @media (max-width: 980px){
+    .sign-grid{ grid-template-columns:1fr; }
+    .menu-stage{ grid-template-columns:1fr; }
+  }
+
+  .screen{
+    border-radius:8px;
+    overflow:hidden;
+    border:1px solid var(--ink-10);
+    background:var(--bg);
+    box-shadow:0 28px 56px -28px rgba(0,0,0,.18), 0 6px 18px -6px rgba(0,0,0,.08);
+  }
+  .screen-bar{
+    display:flex; align-items:center; gap:14px;
+    padding:11px 16px;
+    background:#e3dccd;
+    border-bottom:1px solid rgba(0,0,0,.06);
+  }
+  .screen-bar .dots{ display:flex; gap:6px; }
+  .screen-bar .dots i{ width:11px; height:11px; border-radius:50%; background:rgba(0,0,0,.18); display:block; }
+  .screen-bar .url{
+    flex:1;
+    font-family:var(--mono); font-size:11px; letter-spacing:.04em;
+    color:var(--ink-60);
+    padding:5px 14px;
+    background:rgba(255,255,255,.55);
+    border-radius:4px;
+    text-align:center;
+  }
+  .screen-clip{
+    position:relative;
+    width:100%;
+    aspect-ratio: 4/3;
+    overflow:hidden;
+    background:var(--bg);
+  }
+  .screen-clip iframe{
+    position:absolute;
+    top:0; left:0;
+    width:1440px;
+    height:1800px;
+    border:0;
+    transform-origin:top left;
+    pointer-events:none;
+    background:var(--bg);
+  }
+  .screen-row{
+    display:grid;
+    grid-template-columns:1.5fr 1fr;
+    gap:56px;
+    align-items:start;
+    margin-bottom:88px;
+  }
+  .screen-row:last-child{ margin-bottom:0; }
+  .screen-row.flip{ grid-template-columns:1fr 1.5fr; }
+  .screen-row.flip .screen{ order:2; }
+  .screen-row .notes{ padding-top:8px; }
+  .screen-row .notes .num{
+    font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-40); margin-bottom:14px;
+  }
+  .screen-row .notes h3{
+    font-family:var(--serif); font-weight:400;
+    font-size:clamp(28px, 3vw, 40px); line-height:1.08;
+    margin:0 0 18px; letter-spacing:-.005em;
+  }
+  .screen-row .notes h3 em{ font-style:italic; color:var(--accent-ink); }
+  .screen-row .notes p{ font-size:16px; line-height:1.7; color:var(--ink); max-width:42ch; margin:0 0 14px; }
+  .screen-row .notes .takeaway{
+    margin-top:22px;
+    padding:20px 22px;
+    background:var(--bg-deep);
+    border-left:2px solid var(--copper);
+    font-family:var(--serif);
+    font-style:italic;
+    font-size:18px;
+    color:var(--ink);
+    line-height:1.4;
+  }
+  .screen-row .notes .takeaway::before{
+    content:"Design decision";
+    font-style:normal;
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--ink-60);
+    display:block;
+    margin-bottom:8px;
+  }
+
+  /* responsive */
+  @media (max-width: 980px){
+    .cover-head, .brief-grid, .logo-block, .ig-grid, .pack-grid, .outro-grid,
+    .context-row, .context-row.wide, .context-row.tall,
+    .screen-row, .screen-row.flip{ grid-template-columns:1fr; }
+    .screen-row.flip .screen{ order:0; }
+    .section-head{ grid-template-columns:1fr; gap:24px; }
+    .cover-meta, .stats{ grid-template-columns: 1fr 1fr; gap:24px 0; }
+    .stats > div{ border-right:none; border-bottom:1px solid var(--rule); }
+    .logo-variants{ grid-template-columns: 1fr 1fr; }
+    .palette{ grid-template-columns: 1fr 1fr; }
+    .type-grid{ grid-template-columns:1fr; }
+    .moodboard-grid{ grid-template-columns:repeat(6, 1fr); grid-auto-rows:80px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ╳╳╳ TOP ╳╳╳ -->
+<div class="top">
+  <div class="wrap">
+    <div class="crumbs">
+      <a href="Hone.html">← back</a>
+      <span class="sep">/</span>
+      <span>hone — kyoto</span>
+      <span class="sep">/</span>
+      <span>case study</span>
+    </div>
+    <div class="meta"><strong>2024</strong> · brand &amp; web</div>
+  </div>
+</div>
+
+<!-- ╳╳╳ COVER ╳╳╳ -->
+<section class="cover">
+  <div class="wrap">
+    <div class="cover-head">
+      <div>
+        <span class="chapter">Project № 014 · Hospitality / Brand</span>
+        <h1>
+          a small <em>kyoto</em><br>coffee shop.
+          <span class="jp" lang="ja">骨 — 京都の珈琲店、再構築。</span>
+        </h1>
+      </div>
+      <div>
+        <p class="cover-sub">brand identity and homepage for hone — a twelve-seat pour-over bar on the east bank of the kamogawa.</p>
+      </div>
+    </div>
+
+    <dl class="cover-meta">
+      <div><dt>client</dt><dd>Hone Coffee<span class="small">Ren Takahashi, owner</span></dd></div>
+      <div><dt>location</dt><dd>Kyoto, JP<span class="small">京都市左京区</span></dd></div>
+      <div><dt>scope</dt><dd>Brand &amp; Web<span class="small">identity · type · homepage</span></dd></div>
+      <div><dt>year</dt><dd>2024<span class="small">spring — autumn</span></dd></div>
+    </dl>
+
+    <div class="cover-hero ph" data-placeholder="hero — pour over on wooden bar">
+      <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1800&q=80&auto=format&fit=crop"
+           alt="hands pouring coffee into a v60 on a wooden bar"
+           onerror="this.closest('.ph').dataset.fallback='on'" />
+    </div>
+  </div>
+</section>
+
+<!-- ╳╳╳ 01 · BRIEF ╳╳╳ -->
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="num"><span class="small">Chapter / 01</span>01</div>
+      <div>
+        <span class="eyebrow"><span class="jp" lang="ja">概要</span>the brief</span>
+        <h2>twelve seats. one method. <em>five beans.</em></h2>
+        <p class="lede">Ren opened hone in late 2023 after eight years in tokyo branding studios and a year tasting his way through ethiopia and colombia. the shop is small on purpose: one wooden bar, one brewing method, five rotating beans, never more.</p>
+      </div>
+    </div>
+
+    <div class="brief-grid">
+      <blockquote class="quote">
+        “make it feel like the cafe. no filler, no shouty copy. quiet confidence — the kind of place people come back to because nothing else changed.”
+        <cite>— Ren Takahashi, founder</cite>
+      </blockquote>
+      <div class="body">
+        <p>the homepage had to do four things in order: sell beans, fill weekday classes, hold the uncluttered tone of the shop, and grow a global newsletter ahead of international shipping.</p>
+        <p>the constraint that shaped everything: hone never serves milk. no latte art photography. no foamy hero. the visual story is hands, beans, steam, and a wooden bar.</p>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div>
+        <div class="n"><em>12</em></div>
+        <div class="lbl"><span class="jp" lang="ja">席</span>seats</div>
+      </div>
+      <div>
+        <div class="n">5</div>
+        <div class="lbl"><span class="jp" lang="ja">豆</span>beans, rotating</div>
+      </div>
+      <div>
+        <div class="n">1</div>
+        <div class="lbl"><span class="jp" lang="ja">淹れ方</span>brewing method</div>
+      </div>
+      <div>
+        <div class="n">0</div>
+        <div class="lbl"><span class="jp" lang="ja">音楽</span>music, milk, wifi password</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ╳╳╳ 02 · MOODBOARD ╳╳╳ -->
+<section class="moodboard">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="num"><span class="small">Chapter / 02</span>02</div>
+      <div>
+        <span class="eyebrow"><span class="jp" lang="ja">気分板</span>moodboard</span>
+        <h2>before a single pixel, <em>a wall of references.</em></h2>
+        <p class="lede">two weeks pinning things to a board. nothing digital, nothing typeset. images, kanji clipped from old books, a swatch from a kimono shop on teramachi, a photograph of light through shoji.</p>
+      </div>
+    </div>
+
+    <div class="moodboard-grid">
+
+      <div class="mb col-5 row-4">
+        <span class="mb-tag">01 · machiya</span>
+        <span class="mb-num">京町家</span>
+        <img src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1100&q=80&auto=format&fit=crop"
+             alt="kyoto street with wooden machiya"
+             onerror="this.closest('.mb').dataset.fallback='on'" />
+      </div>
+
+      <div class="mb col-4 row-3 mb-text">
+        <span class="mb-tag">02 · kanji</span>
+        <span class="glyph" lang="ja">骨</span>
+        <span class="lbl">bone · essence · frame</span>
+      </div>
+
+      <div class="mb col-3 row-2">
+        <span class="mb-tag">03 · pour</span>
+        <span class="mb-num">道具</span>
+        <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=900&q=80&auto=format&fit=crop"
+             alt="pour over kettle and v60"
+             onerror="this.closest('.mb').dataset.fallback='on'" />
+      </div>
+
+      <div class="mb col-3 row-2">
+        <span class="mb-tag">04 · beans</span>
+        <span class="mb-num">豆</span>
+        <img src="https://images.unsplash.com/photo-1442550528053-c431ecb55509?w=900&q=80&auto=format&fit=crop"
+             alt="close up of roasted coffee beans"
+             onerror="this.closest('.mb').dataset.fallback='on'" />
+      </div>
+
+      <div class="mb col-4 row-3 mb-text left">
+        <span class="mb-tag">05 · quote</span>
+        <span class="quote">“the shop is <em>quiet by design.</em> the brand has to match.”</span>
+        <span class="lbl" style="margin-top:auto;">— Ren Takahashi, briefing</span>
+      </div>
+
+      <div class="mb col-3 row-3">
+        <span class="mb-tag">06 · grain</span>
+        <span class="mb-num">木目</span>
+        <img src="https://images.unsplash.com/photo-1453614512568-c4024d13c247?w=900&q=80&auto=format&fit=crop"
+             alt="warm wooden counter"
+             onerror="this.closest('.mb').dataset.fallback='on'" />
+      </div>
+
+      <div class="mb col-3 row-2 mb-text">
+        <span class="mb-tag">07 · mincho</span>
+        <span class="glyph cream" lang="ja">明朝</span>
+        <span class="lbl">shippori mincho b1</span>
+      </div>
+
+      <div class="mb col-3 row-3">
+        <span class="mb-tag">08 · steam</span>
+        <span class="mb-num">湯気</span>
+        <img src="https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=900&q=80&auto=format&fit=crop"
+             alt="hands pouring coffee"
+             onerror="this.closest('.mb').dataset.fallback='on'" />
+      </div>
+
+      <div class="mb col-6 row-2">
+        <div class="mb-swatches" style="height:100%;">
+          <div class="s" style="background:#efe8dc; color:rgba(0,0,0,.55);">#EFE8DC<br>cream</div>
+          <div class="s" style="background:#b06a3b;">#B06A3B<br>copper</div>
+          <div class="s" style="background:#2f5a44;">#2F5A44<br>green</div>
+          <div class="s" style="background:#8b2e3a;">#8B2E3A<br>wine</div>
+          <div class="s" style="background:#3d4a7a;">#3D4A7A<br>indigo</div>
+          <div class="s" style="background:#1a1a1a; color:rgba(255,255,255,.65);">#1A1A1A<br>ink</div>
+        </div>
+        <span class="mb-tag" style="z-index:3;">09 · palette</span>
+      </div>
+
+      <div class="mb col-3 row-2 mb-text">
+        <span class="mb-tag">10 · ratio</span>
+        <span class="quote">15 : 250<br><em>92°c · 2:45</em></span>
+        <span class="lbl">the recipe is the brand</span>
+      </div>
+
+      <div class="mb col-3 row-3">
+        <span class="mb-tag">11 · doorway</span>
+        <span class="mb-num">入口</span>
+        <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=900&q=80&auto=format&fit=crop"
+             alt="warm cafe interior with hanging lights"
+             onerror="this.closest('.mb').dataset.fallback='on'" />
+      </div>
+
+      <div class="mb col-3 row-3 mb-text">
+        <span class="mb-tag">12 · kana</span>
+        <span class="glyph" style="font-size:clamp(72px, 7vw, 130px);" lang="ja">ほね</span>
+        <span class="lbl">hiragana · phonetic</span>
+        <span class="jp-note" lang="ja">小さく、静かに。</span>
+      </div>
+
+      <div class="mb col-3 row-3">
+        <span class="mb-tag">13 · cup</span>
+        <span class="mb-num">器</span>
+        <img src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=900&q=80&auto=format&fit=crop"
+             alt="hands holding a ceramic coffee cup"
+             onerror="this.closest('.mb').dataset.fallback='on'" />
+      </div>
+
+      <div class="mb col-3 row-2 mb-text left" style="padding:24px;">
+        <span class="mb-tag">14 · principle</span>
+        <span class="quote" style="font-size:24px;">don't <em>explain.</em><br>show.</span>
+      </div>
+
+    </div>
+
+    <p style="margin-top:48px; font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.5); text-align:center;">
+      <span class="jp" lang="ja" style="font-family:var(--jp-serif); text-transform:none; letter-spacing:.16em; color:var(--bg); margin-right:14px;">骨組み</span>
+      framework before form · references collected april — may 2024
+    </p>
+  </div>
+</section>
+
+<!-- ╳╳╳ 03 · IDENTITY ╳╳╳ -->
+<section class="identity">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="num"><span class="small">Chapter / 03</span>03</div>
+      <div>
+        <span class="eyebrow"><span class="jp" lang="ja">同一性</span>identity</span>
+        <h2>a kanji, a wordmark, and <em>nothing else.</em></h2>
+        <p class="lede">the mark is a single character. 骨 — read “hone” — means bone, or, more loosely, essence. it is what the shop is named for and what every decision is measured against.</p>
+      </div>
+    </div>
+
+    <div class="logo-block">
+      <div class="logo-card">
+        <span class="corner">primary / mark</span>
+        <div class="mark" lang="ja">骨</div>
+        <div class="wordmark">hone</div>
+        <div class="tag" lang="ja">京都の珈琲店</div>
+      </div>
+      <div class="logo-notes">
+        <h3>one character, <em>seven strokes,</em> built for type that won't move for the next ten years.</h3>
+        <p>set in shippori mincho — a 21st-century revival of pre-war japanese book typefaces — paired with instrument serif for the latin wordmark. the two typefaces share a calm vertical contrast and feel as though they were always meant to sit together.</p>
+        <p>no monogram, no badge, no secondary mark. the shop is the brand. the brand is the kanji.</p>
+        <div class="kanji-note">
+          <span class="glyph" lang="ja">骨</span>
+          <span class="text"><strong>HONE / ほね / 骨</strong> · bone, frame, essence. the underlying structure. what is left when everything else is taken away.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="logo-variants">
+      <div class="lv cream"><span class="mark" lang="ja">骨</span><span class="word">hone</span><span class="corner">cream / primary</span></div>
+      <div class="lv dark"><span class="mark" lang="ja">骨</span><span class="word">hone</span><span class="corner">ink / inverted</span></div>
+      <div class="lv copper"><span class="mark" lang="ja">骨</span><span class="word">hone</span><span class="corner">copper / ethiopia</span></div>
+      <div class="lv green"><span class="mark" lang="ja">骨</span><span class="word">hone</span><span class="corner">green / colombia</span></div>
+    </div>
+
+    <div class="palette-head">
+      <h4>palette — drawn from the week's bean.</h4>
+      <span class="note">five rotating, never more · 五色</span>
+    </div>
+    <div class="palette">
+      <div class="swatch">
+        <div class="chip light" style="background:#efe8dc;">
+          <span class="num">00</span><span class="hex">#EFE8DC</span>
+        </div>
+        <div class="label"><div class="name">cream</div><div class="bean"><span class="jp" lang="ja">生成</span>base</div></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#b06a3b;">
+          <span class="num">01</span><span class="hex">#B06A3B</span>
+        </div>
+        <div class="label"><div class="name">copper</div><div class="bean"><span class="jp" lang="ja">エチオピア</span>Konga</div></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#2f5a44;">
+          <span class="num">02</span><span class="hex">#2F5A44</span>
+        </div>
+        <div class="label"><div class="name">green</div><div class="bean"><span class="jp" lang="ja">コロンビア</span>Inmaculada</div></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#8b2e3a;">
+          <span class="num">03</span><span class="hex">#8B2E3A</span>
+        </div>
+        <div class="label"><div class="name">wine</div><div class="bean"><span class="jp" lang="ja">ケニア</span>Gichathaini</div></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#3d4a7a;">
+          <span class="num">04</span><span class="hex">#3D4A7A</span>
+        </div>
+        <div class="label"><div class="name">indigo</div><div class="bean"><span class="jp" lang="ja">インドネシア</span>Frinsa</div></div>
+      </div>
+    </div>
+
+    <div class="palette-head">
+      <h4>type — three families, no exceptions.</h4>
+      <span class="note">two latin · one japanese</span>
+    </div>
+    <div class="type-grid">
+      <div class="type-card serif">
+        <div class="sample">Aa <em>Bb</em></div>
+        <div class="role">display &amp; numerals</div>
+        <div class="info">
+          <strong>family</strong><span>Instrument Serif</span>
+          <strong>weights</strong><span>regular · italic</span>
+          <strong>used for</strong><span>headlines, prices, callouts</span>
+        </div>
+      </div>
+      <div class="type-card jp-serif">
+        <div class="sample" lang="ja">骨</div>
+        <div class="role">japanese display</div>
+        <div class="info">
+          <strong>family</strong><span>Shippori Mincho B1</span>
+          <strong>weights</strong><span>regular · medium</span>
+          <strong>used for</strong><span>kanji, kana, address</span>
+        </div>
+      </div>
+      <div class="type-card sans">
+        <div class="sample">aa Bb 01</div>
+        <div class="role">body &amp; mono</div>
+        <div class="info">
+          <strong>family</strong><span>DM Sans · JetBrains Mono</span>
+          <strong>weights</strong><span>300 · 400 · 500</span>
+          <strong>used for</strong><span>body copy, eyebrows, specs</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ╳╳╳ 04 · HOMEPAGE ╳╳╳ -->
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="num"><span class="small">Chapter / 04</span>04</div>
+      <div>
+        <span class="eyebrow"><span class="jp" lang="ja">サイト</span>the homepage</span>
+        <h2>desktop-first. <em>uncrowded.</em> built to live ten years.</h2>
+        <p class="lede">a single long page. nav sticks. open status is live. every section earns its place — the bean, the five, the subscription, the classes, the visit, the letter. each frame below is the running site, not a mockup.</p>
+      </div>
+    </div>
+
+    <!-- 01 HERO -->
+    <div class="screen-row">
+      <div class="screen">
+        <div class="screen-bar">
+          <span class="dots"><i></i><i></i><i></i></span>
+          <span class="url">hone.kyoto</span>
+        </div>
+        <div class="screen-clip"><iframe data-scroll="0" src="Hone.html" loading="lazy" title="hone homepage — hero"></iframe></div>
+      </div>
+      <div class="notes">
+        <div class="num">04 · 01 / hero</div>
+        <h3>one method. five beans. <em>twelve seats.</em></h3>
+        <p>the entire promise of the shop in three lines. a tategaki rail on the left in mincho — 京都 · 鴨川東岸 · 二〇二三 — gives the page a quiet kyoto-book feel before the user has read a word in english.</p>
+        <p>the photo is hands at the bar — never milk drinks. the live open / closed pip next to the wordmark uses a soft green pulse, never red.</p>
+        <div class="takeaway">the headline does the brief — quiet, specific, bilingual. nothing is sold above the fold.</div>
+      </div>
+    </div>
+
+    <!-- 02 NOW POURING -->
+    <div class="screen-row flip">
+      <div class="notes">
+        <div class="num">04 · 02 / now pouring</div>
+        <h3>one bean, this week. <em>a 5-line recipe.</em></h3>
+        <p>process, varietal, roast date, tasting notes, brew ratio. the spec table reads like a label, not marketing — it's how Ren talks to other coffee people.</p>
+        <p>the accent colour is set by the week's bean: copper this week, deep green for colombia, indigo for indonesia. the dot, the headline italic, the cta — all follow.</p>
+        <div class="takeaway">a single bean takes up half the page on launch week. specificity is the brand.</div>
+      </div>
+      <div class="screen">
+        <div class="screen-bar">
+          <span class="dots"><i></i><i></i><i></i></span>
+          <span class="url">hone.kyoto / #beans</span>
+        </div>
+        <div class="screen-clip"><iframe data-scroll="1700" src="Hone.html#beans" loading="lazy" title="hone — now pouring"></iframe></div>
+      </div>
+    </div>
+
+    <!-- 03 THE FIVE -->
+    <div class="screen-row">
+      <div class="screen">
+        <div class="screen-bar">
+          <span class="dots"><i></i><i></i><i></i></span>
+          <span class="url">hone.kyoto / #five</span>
+        </div>
+        <div class="screen-clip"><iframe data-scroll="2700" src="Hone.html#five" loading="lazy" title="hone — the five"></iframe></div>
+      </div>
+      <div class="notes">
+        <div class="num">04 · 03 / the five</div>
+        <h3>five beans, rotating. <em>never more.</em></h3>
+        <p>a hairline table, no cards, no badges. click any row — it expands inline with brew specs, roast date, and a buy button. the bean that's currently on the bar carries the copper dot and accent.</p>
+        <p>the row that's "resting" carries a disabled cta with its return date. the constraint is the feature.</p>
+        <div class="takeaway">a constraint shown plainly beats a benefit invented. listing what's gone is part of the story.</div>
+      </div>
+    </div>
+
+    <!-- 04 SUBSCRIPTIONS -->
+    <div class="screen-row flip">
+      <div class="notes">
+        <div class="num">04 · 04 / subscriptions</div>
+        <h3>three pills. <em>one price.</em> a bag, posted from kyoto.</h3>
+        <p>size, cadence, choice — that's the whole configurator. no bundle tier, no discount ladder. the price updates live as you tap. matches the way Ren wraps a bag at the bar.</p>
+        <p>copy: "a bag, posted from kyoto. every other sunday." no exclamation marks, no urgency, no countdown timer.</p>
+        <div class="takeaway">subscriptions are the real revenue — but the design refuses to act like a checkout.</div>
+      </div>
+      <div class="screen">
+        <div class="screen-bar">
+          <span class="dots"><i></i><i></i><i></i></span>
+          <span class="url">hone.kyoto / #subscribe</span>
+        </div>
+        <div class="screen-clip"><iframe data-scroll="3800" src="Hone.html#subscribe" loading="lazy" title="hone — subscribe"></iframe></div>
+      </div>
+    </div>
+
+    <!-- 05 CLASSES -->
+    <div class="screen-row">
+      <div class="screen">
+        <div class="screen-bar">
+          <span class="dots"><i></i><i></i><i></i></span>
+          <span class="url">hone.kyoto / #classes</span>
+        </div>
+        <div class="screen-clip"><iframe data-scroll="4700" src="Hone.html#classes" loading="lazy" title="hone — classes"></iframe></div>
+      </div>
+      <div class="notes">
+        <div class="num">04 · 05 / classes</div>
+        <h3>a dark stretch. <em>a different room.</em></h3>
+        <p>weekday classes are the highest-margin product. the section inverts to ink-black to mark a shift — like walking from the bar to the back room where the cupping happens.</p>
+        <p>the four scheduled slots are listed plainly with seat counts. "full" is a colour shift, not a disabled button. the cta is bone-white.</p>
+        <div class="takeaway">a section break that physically resembles a room change in the cafe.</div>
+      </div>
+    </div>
+
+    <!-- 06 VISIT -->
+    <div class="screen-row flip">
+      <div class="notes">
+        <div class="num">04 · 06 / visit</div>
+        <h3>address in mincho. <em>three house rules.</em></h3>
+        <p>the address is set in shippori mincho with the romaji underneath — japanese first, latin second. open hours, contact, walking time from demachiyanagi station.</p>
+        <p>three rules in italic serif: <em>none</em>. <em>ask, if you must</em>. <em>we don't</em>. each with a quiet japanese subline. the rules ARE the welcome.</p>
+        <div class="takeaway">house rules treated as typography, not warnings. the form of the page is its hospitality.</div>
+      </div>
+      <div class="screen">
+        <div class="screen-bar">
+          <span class="dots"><i></i><i></i><i></i></span>
+          <span class="url">hone.kyoto / #visit</span>
+        </div>
+        <div class="screen-clip"><iframe data-scroll="5500" src="Hone.html#visit" loading="lazy" title="hone — visit"></iframe></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ╳╳╳ 05 · SIGNAGE ╳╳╳ -->
+<section class="signage">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="num"><span class="small">Chapter / 05</span>05</div>
+      <div>
+        <span class="eyebrow"><span class="jp" lang="ja">看板</span>signage &amp; print</span>
+        <h2>a noren, a wooden plank, <em>a small card.</em></h2>
+        <p class="lede">three pieces of physical brand. the noren that hangs at noon and comes in at five. a wooden hanging sign carved by a craftsman in fushimi. a hours card you can take with you.</p>
+      </div>
+    </div>
+
+    <div class="sign-grid">
+
+      <!-- noren -->
+      <div class="sign-cell">
+        <span class="corner">01 · noren · 暖簾</span>
+        <div class="noren-stage">
+          <div class="noren-rod"></div>
+          <div class="noren">
+            <div class="noren-panel"></div>
+            <div class="noren-panel center">
+              <span class="kanji" lang="ja">骨</span>
+              <span class="word">hone</span>
+            </div>
+            <div class="noren-panel"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- wooden sign -->
+      <div class="sign-cell">
+        <span class="corner">02 · hanging sign · 木看板</span>
+        <div class="wood-stage">
+          <div class="wood-rope"></div>
+          <div class="wood-sign">
+            <span class="kanji" lang="ja">骨</span>
+            <span class="word">hone</span>
+            <span class="est" lang="ja">est. 二〇二三</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sign-grid" style="grid-template-columns: 1fr 1.3fr;">
+      <!-- hours card -->
+      <div class="sign-cell">
+        <span class="corner">03 · hours card · 営業時間</span>
+        <div class="hours-stage">
+          <div class="hours-card">
+            <div class="glyph" lang="ja">骨</div>
+            <div class="name">hone — kyoto</div>
+            <hr>
+            <dl>
+              <dt>tue</dt><dd>09—17</dd>
+              <dt>thu</dt><dd>09—17</dd>
+              <dt>fri</dt><dd>09—17</dd>
+              <dt>sat</dt><dd>09—17</dd>
+              <dt>sun</dt><dd>09—17</dd>
+              <dt>wed</dt><dd>—</dd>
+            </dl>
+            <div class="closed" lang="ja">水曜定休</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- business card -->
+      <div class="sign-cell">
+        <span class="corner">04 · meishi · 名刺</span>
+        <div class="card-stage">
+          <div class="card">
+            <div class="top-row">
+              <div>
+                <div class="mark" lang="ja">骨</div>
+                <div class="word">hone</div>
+              </div>
+              <span class="meta">est. 2023</span>
+            </div>
+            <div>
+              <div class="name">Ren Takahashi</div>
+              <div class="role">founder · roaster</div>
+              <div class="contact">ren@hone.kyoto<br>14-3 shimogamo miyagawa-cho</div>
+            </div>
+          </div>
+          <div class="card back">
+            <div class="top-row" style="justify-content:flex-end;">
+              <span class="meta" lang="ja">京都の珈琲店</span>
+            </div>
+            <div class="quote" lang="ja">骨<em>essence. the bone of the thing.</em></div>
+            <div class="top-row" style="justify-content:space-between;">
+              <span class="meta">hone.kyoto</span>
+              <span class="mark" lang="ja">骨</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ╳╳╳ 06 · MENU ╳╳╳ -->
+<section class="menu">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="num"><span class="small">Chapter / 06</span>06</div>
+      <div>
+        <span class="eyebrow"><span class="jp" lang="ja">品書</span>menu</span>
+        <h2>one page. <em>printed weekly.</em> reset on every monday.</h2>
+        <p class="lede">a4 cream paper, single-sided, letterpress feel, mincho throughout. the menu changes once a week with the bean rotation. the bar has a stack. take one home.</p>
+      </div>
+    </div>
+
+    <div class="menu-stage">
+
+      <div class="menu-card">
+        <div class="menu-head">
+          <div>
+            <div class="mark" lang="ja">骨</div>
+            <div class="wmark">hone — menu</div>
+          </div>
+          <div class="meta">
+            <span lang="ja">第二十週</span><br>
+            <strong>week 20</strong><br>
+            17 may — 23 may<br>
+            京都 / kyoto
+          </div>
+        </div>
+
+        <h4>
+          <span>today on the bar</span>
+          <span class="jp" lang="ja">今週の豆</span>
+        </h4>
+        <div class="line featured">
+          <span class="n">★</span>
+          <span class="name">ethiopia <em>konga</em>
+            <span class="desc">washed · 12 days off · jasmine, white peach, black tea · 15g : 250g · 92°c</span>
+          </span>
+          <span class="price">¥850</span>
+        </div>
+
+        <h4>
+          <span>the five</span>
+          <span class="jp" lang="ja">五つの豆 · 200g 持ち帰り</span>
+        </h4>
+        <div class="line">
+          <span class="n">01</span>
+          <span class="name">ethiopia konga<span class="desc">yirgacheffe · washed · エチオピア</span></span>
+          <span class="price">¥1,800</span>
+        </div>
+        <div class="line">
+          <span class="n">02</span>
+          <span class="name">colombia inmaculada<span class="desc">huila · washed · コロンビア</span></span>
+          <span class="price">¥1,650</span>
+        </div>
+        <div class="line">
+          <span class="n">03</span>
+          <span class="name">kenya gichathaini<span class="desc">nyeri · washed · ケニア</span></span>
+          <span class="price">¥2,100</span>
+        </div>
+        <div class="line">
+          <span class="n">04</span>
+          <span class="name">guatemala el injerto<span class="desc">huehuetenango · honey · low stock</span></span>
+          <span class="price">¥1,900</span>
+        </div>
+        <div class="line">
+          <span class="n">05</span>
+          <span class="name">indonesia frinsa<span class="desc">west java · natural · resting until 22 may</span></span>
+          <span class="price">—</span>
+        </div>
+
+        <h4>
+          <span>at the bar</span>
+          <span class="jp" lang="ja">店内</span>
+        </h4>
+        <div class="line">
+          <span class="n">·</span>
+          <span class="name">pour-over, 1 cup<span class="desc">whichever bean is on the bar this week</span></span>
+          <span class="price">¥850</span>
+        </div>
+        <div class="line">
+          <span class="n">·</span>
+          <span class="name">tasting flight, 3 cups<span class="desc">three of the five, side by side, ~30 min</span></span>
+          <span class="price">¥2,200</span>
+        </div>
+        <div class="line">
+          <span class="n">·</span>
+          <span class="name">the four cup method <em>class</em><span class="desc">tue &amp; thu, 14:00 · 2 hours · seats four</span></span>
+          <span class="price">¥6,500</span>
+        </div>
+
+        <div class="footer-note">
+          <span>hone.kyoto · 14-3 shimogamo miyagawa-cho</span>
+          <span lang="ja">水曜定休 · closed wednesdays</span>
+        </div>
+      </div>
+
+      <div class="menu-side">
+        <h3>printed on a small <em>heidelberg</em> in fushimi, every monday morning.</h3>
+        <p>the menu is the only piece of printed copy that changes. it's printed on 130gsm cream stock, single black ink plus a copper foil-stamp on the week number, by a third-generation press just south of the shop.</p>
+        <p>customers take one home — it doubles as a brew card. the back is blank by intent: room for the date, the dose, a note.</p>
+
+        <div class="specs">
+          <div>stock <strong>cream 130gsm</strong></div>
+          <div>ink <strong>black + copper</strong></div>
+          <div>size <strong>A4 · 210×297</strong></div>
+          <div>print <strong>letterpress, fushimi</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ╳╳╳ 07 · IN THE CAFE ╳╳╳ -->
+<section>
+  <div class="wrap-wide">
+    <div class="wrap" style="padding-left:0;padding-right:0;">
+      <div class="section-head">
+        <div class="num"><span class="small">Chapter / 07</span>07</div>
+        <div>
+          <span class="eyebrow"><span class="jp" lang="ja">店内</span>in the cafe</span>
+          <h2>the shop is the <em>brand brief.</em></h2>
+          <p class="lede">a converted machiya near the kamogawa. one wooden bar, twelve seats, the kind of light that only happens before noon in kyoto. every brand decision was either taken from this room, or measured against it.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="context-row">
+      <div>
+        <div class="context-photo ph" data-placeholder="cafe interior · machiya, wooden counter">
+          <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=1500&q=80&auto=format&fit=crop"
+               alt="warm wooden cafe interior with hanging lights"
+               onerror="this.closest('.ph').dataset.fallback='on'" />
+        </div>
+        <div class="photo-caption">
+          <span class="num">01 / interior</span>
+          <span class="jp" lang="ja">木のカウンター · 朝の光</span>
+        </div>
+      </div>
+      <div>
+        <div class="context-photo ph" data-placeholder="storefront · machiya, kamogawa light">
+          <img src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1500&q=80&auto=format&fit=crop"
+               alt="traditional kyoto machiya storefront"
+               onerror="this.closest('.ph').dataset.fallback='on'" />
+        </div>
+        <div class="photo-caption">
+          <span class="num">02 / storefront</span>
+          <span class="jp" lang="ja">京町家 · 鴨川東岸</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="context-row">
+      <div>
+        <div class="context-photo ph" data-placeholder="weekday class · the bar at 14:00">
+          <img src="https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=1200&q=80&auto=format&fit=crop"
+               alt="customers at a cafe counter"
+               onerror="this.closest('.ph').dataset.fallback='on'" />
+        </div>
+        <div class="photo-caption">
+          <span class="num">03 / weekday class</span>
+          <span class="jp" lang="ja">教室 · 木曜 14:00</span>
+        </div>
+      </div>
+      <div>
+        <div class="context-photo ph" data-placeholder="hands · the four cup method">
+          <img src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=1200&q=80&auto=format&fit=crop"
+               alt="hands holding a coffee cup at a wooden table"
+               onerror="this.closest('.ph').dataset.fallback='on'" />
+        </div>
+        <div class="photo-caption">
+          <span class="num">04 / detail</span>
+          <span class="jp" lang="ja">手 · 一杯目</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="context-row">
+      <div class="context-photo bleed ph" data-placeholder="full bleed · the bar at 09:00">
+        <img src="https://images.unsplash.com/photo-1453614512568-c4024d13c247?w=2200&q=80&auto=format&fit=crop"
+             alt="warm wooden interior of a small coffee bar"
+             onerror="this.closest('.ph').dataset.fallback='on'" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ╳╳╳ 08 · PACKAGING ╳╳╳ -->
+<section class="pack">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="num"><span class="small">Chapter / 08</span>08</div>
+      <div>
+        <span class="eyebrow"><span class="jp" lang="ja">包装</span>packaging</span>
+        <h2>a paper bag, a copper stamp, <em>and a date.</em></h2>
+        <p class="lede">200g kraft bag, single foil-stamp in the week's accent, hand-written roast date. the bag is the receipt — it tells you which bean it is, when it was roasted, and how to brew it. nothing more.</p>
+      </div>
+    </div>
+
+    <div class="pack-grid">
+      <div class="pack-photo ph" data-placeholder="200g bag · konga · in hand">
+        <img src="https://images.unsplash.com/photo-1559496417-e7f25cb247f3?w=1100&q=80&auto=format&fit=crop"
+             alt="kraft paper coffee bag on a wooden surface"
+             onerror="this.closest('.ph').dataset.fallback='on'" />
+      </div>
+      <div class="pack-spec">
+        <div class="pkg-head">
+          <span>骨 · hone</span>
+          <span>200 g · whole bean</span>
+        </div>
+        <div class="stamp">
+          <span class="glyph" lang="ja">骨</span>
+          <span class="lbl">Ethiopia</span>
+          <span class="week" lang="ja">第二十週 · 17 May</span>
+        </div>
+        <div class="pkg-title">
+          ethiopia <em>konga</em>
+          <span class="jp" lang="ja">エチオピア · コンガ</span>
+        </div>
+        <div class="pkg-specs">
+          <strong>process</strong><span>washed</span>
+          <strong>roast</strong><span>06 may 2026</span>
+          <strong>altitude</strong><span>1,980 m</span>
+          <strong>brew</strong><span>15g : 250g · 92°c</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ╳╳╳ 09 · INSTAGRAM ╳╳╳ -->
+<section class="instagram">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="num"><span class="small">Chapter / 09</span>09</div>
+      <div>
+        <span class="eyebrow"><span class="jp" lang="ja">広報</span>social</span>
+        <h2>one feed, three pillars, <em>no exclamation marks.</em></h2>
+        <p class="lede">instagram is the only social surface. three content pillars rotate weekly, lowercase voice throughout, copper accent on every post when the ethiopian is on the bar.</p>
+      </div>
+    </div>
+
+    <div class="ig-grid">
+      <div class="ig-device">
+        <div class="ig-frame">
+          <div class="ig-status"><span>9:41</span><span>● ● ●</span></div>
+          <div class="ig-topbar">
+            <div class="ig-avatar" lang="ja">骨</div>
+            <div class="ig-handle">hone.kyoto<small>京都 · 鴨川東岸</small></div>
+            <div class="dots">⋯</div>
+          </div>
+
+          <div class="ig-post">
+            <div class="ig-post-img ph" data-placeholder="post 01 · this week's bean">
+              <img src="https://images.unsplash.com/photo-1442550528053-c431ecb55509?w=900&q=80&auto=format&fit=crop"
+                   alt="close-up of roasted coffee beans"
+                   onerror="this.closest('.ph').dataset.fallback='on'" />
+            </div>
+            <div class="ig-post-actions">
+              <span>♡</span><span>◯</span><span>↑</span><span class="save">◫</span>
+            </div>
+            <div class="ig-post-caption">
+              <b>hone.kyoto</b> ethiopia konga, washed, 12 days off roast. jasmine, white peach, black tea. on the bar this week. <span class="tag">#konga #yirgacheffe</span>
+              <span class="time">17 may · 14:02</span>
+            </div>
+          </div>
+
+          <div class="ig-post">
+            <div class="ig-post-img ph" data-placeholder="post 02 · pour over detail">
+              <img src="https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=900&q=80&auto=format&fit=crop"
+                   alt="hands pouring water into a v60 brewer"
+                   onerror="this.closest('.ph').dataset.fallback='on'" />
+            </div>
+            <div class="ig-post-actions">
+              <span>♡</span><span>◯</span><span>↑</span><span class="save">◫</span>
+            </div>
+            <div class="ig-post-caption">
+              <b>hone.kyoto</b> the four cup method. tue &amp; thu, 14:00. two seats this week. <span class="tag">#class</span>
+              <span class="time">14 may · 09:18</span>
+            </div>
+          </div>
+
+          <div class="ig-post">
+            <div class="ig-post-img ph" data-placeholder="post 03 · machiya at dusk">
+              <img src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=900&q=80&auto=format&fit=crop"
+                   alt="kyoto machiya at dusk"
+                   onerror="this.closest('.ph').dataset.fallback='on'" />
+            </div>
+            <div class="ig-post-actions">
+              <span>♡</span><span>◯</span><span>↑</span><span class="save">◫</span>
+            </div>
+            <div class="ig-post-caption">
+              <b>hone.kyoto</b> closed wednesdays. back thursday, 09:00. <span class="tag">#kyoto #kamogawa</span>
+              <span class="time">11 may · 17:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ig-side">
+        <h3>three pillars. rotated weekly. <em>nothing else.</em></h3>
+        <p>the goal is not reach. the goal is to be the first place someone shows a friend who is travelling to kyoto.</p>
+        <div class="ig-pillars">
+          <div class="row">
+            <span class="n">01</span>
+            <span class="name">the bean<em> · the week's profile</em></span>
+            <span class="pct">40%</span>
+          </div>
+          <div class="row">
+            <span class="n">02</span>
+            <span class="name">the bar<em> · classes &amp; service</em></span>
+            <span class="pct">35%</span>
+          </div>
+          <div class="row">
+            <span class="n">03</span>
+            <span class="name">the city<em> · kamogawa, kyoto light</em></span>
+            <span class="pct">25%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ╳╳╳ 10 · OUTRO ╳╳╳ -->
+<section class="outro">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="num"><span class="small">Chapter / 10</span>10</div>
+      <div>
+        <span class="eyebrow"><span class="jp" lang="ja">仕舞い</span>closing</span>
+        <h2>what is left when <em>everything else</em> is taken away.</h2>
+        <p class="lede">the homepage launched in spring 2024. the newsletter passed 2,400 subscribers by autumn — 38% outside japan. weekday classes have been fully booked for fourteen consecutive weeks.</p>
+      </div>
+    </div>
+
+    <div class="outro-grid">
+      <div>
+        <p class="quote-jp" lang="ja">骨。<br>essence. the bone of the thing.<br>残ったものが、本物。</p>
+        <div class="links">
+          <a href="Hone.html">view the homepage <span>→</span></a>
+          <a class="ghost" href="#">read the journal</a>
+        </div>
+      </div>
+
+      <dl class="credits">
+        <div class="row"><dt>design</dt><dd>direction · brand · web</dd></div>
+        <div class="row"><dt>type</dt><dd>Instrument Serif · Shippori Mincho B1 · DM Sans</dd></div>
+        <div class="row"><dt>photography</dt><dd>Hiroshi Watanabe · Unsplash contributors</dd></div>
+        <div class="row"><dt>thanks</dt><dd>Ren Takahashi · the hone staff</dd></div>
+        <div class="row"><dt>year</dt><dd>2024 · spring — autumn</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- ╳╳╳ FOOT ╳╳╳ -->
+<footer class="foot">
+  <div class="wrap">
+    <span class="brand"><span class="kanji" lang="ja">骨</span>hone — kyoto</span>
+    <span>case study · 2024 — </span>
+    <span>← <a href="Hone.html" style="color:var(--ink);text-decoration:underline;text-decoration-color:var(--ink-20);text-underline-offset:3px;">back to homepage</a></span>
+  </div>
+</footer>
+
+<script>
+  /* iframe scaling — fit a 1440-wide page inside any container */
+  function scaleScreens(){
+    document.querySelectorAll('.screen-clip').forEach(clip => {
+      const iframe = clip.querySelector('iframe');
+      if (!iframe) return;
+      const w = clip.getBoundingClientRect().width;
+      const scale = w / 1440;
+      iframe.style.transform = `scale(${scale})`;
+      // size iframe tall enough that the scaled height fills the clip
+      const clipH = clip.getBoundingClientRect().height;
+      iframe.style.height = (clipH / scale) + 'px';
+    });
+  }
+  window.addEventListener('resize', scaleScreens);
+  window.addEventListener('load', scaleScreens);
+  scaleScreens();
+
+  /* iframe scroll positioning — scroll to hash with a small offset
+     so the sticky nav doesn't sit on top of the section header */
+  document.querySelectorAll('.screen-clip iframe').forEach(iframe => {
+    iframe.addEventListener('load', () => {
+      try {
+        const hash = (iframe.src.split('#')[1] || '').trim();
+        if (!hash) return;
+        const doc = iframe.contentDocument;
+        const win = iframe.contentWindow;
+        if (!doc || !win) return;
+        const target = doc.getElementById(hash);
+        if (target){
+          const top = target.getBoundingClientRect().top + win.scrollY - 90;
+          win.scrollTo(0, Math.max(0, top));
+        }
+      } catch(e) { /* cross-origin safety */ }
+      // re-scale after content settles
+      setTimeout(scaleScreens, 200);
+    });
+  });
+</script>
+
+</body>
+</html>
