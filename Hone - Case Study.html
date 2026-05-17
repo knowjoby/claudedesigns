@@ -977,6 +977,314 @@
     .menu-stage{ grid-template-columns:1fr; }
   }
 
+  /* logo construction */
+  .construct{
+    display:grid; grid-template-columns: 1fr 1fr;
+    gap:48px; margin-bottom:64px; align-items:start;
+  }
+  .construct-frame{
+    aspect-ratio: 1/1;
+    background:var(--bg);
+    border:1px solid var(--ink-10);
+    position:relative;
+    overflow:hidden;
+  }
+  .construct-frame .grid{
+    position:absolute; inset:14% 14%;
+    background:
+      repeating-linear-gradient(to right, transparent 0 calc(100%/8 - 1px), rgba(26,26,26,.06) calc(100%/8 - 1px) calc(100%/8)),
+      repeating-linear-gradient(to bottom, transparent 0 calc(100%/8 - 1px), rgba(26,26,26,.06) calc(100%/8 - 1px) calc(100%/8));
+  }
+  .construct-frame .axes{
+    position:absolute; inset:14% 14%;
+    background:
+      linear-gradient(to right, transparent calc(50% - .5px), rgba(176,106,59,.4) calc(50% - .5px), rgba(176,106,59,.4) calc(50% + .5px), transparent calc(50% + .5px)),
+      linear-gradient(to bottom, transparent calc(50% - .5px), rgba(176,106,59,.4) calc(50% - .5px), rgba(176,106,59,.4) calc(50% + .5px), transparent calc(50% + .5px));
+  }
+  .construct-frame .bounds{
+    position:absolute; inset:14% 14%;
+    border:1px dashed rgba(176,106,59,.5);
+  }
+  .construct-frame .glyph{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--jp-serif);
+    font-size:clamp(180px, 22vw, 320px);
+    line-height:1;
+    color:var(--ink);
+    z-index:2;
+  }
+  .construct-frame .tick{
+    position:absolute;
+    font-family:var(--mono); font-size:9px; letter-spacing:.16em;
+    color:var(--copper); text-transform:uppercase;
+    z-index:3; padding:4px 8px;
+  }
+  .construct-frame .tick.tl{ top:14%; left:14%; transform:translate(-110%, -100%); }
+  .construct-frame .tick.bl{ bottom:14%; left:14%; transform:translate(-110%, 100%); }
+  .construct-frame .tick.br{ bottom:14%; right:14%; transform:translate(110%, 100%); text-align:right; }
+  .construct-frame .tick.tr{ top:14%; right:14%; transform:translate(110%, -100%); text-align:right; }
+  .construct-frame .tick.cap{
+    top:14%; left:50%; transform:translate(-50%, -130%);
+    font-family:var(--serif); font-style:italic; font-size:13px; color:var(--ink-60);
+    letter-spacing:0; text-transform:none;
+  }
+  .construct-notes h4{
+    font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--ink-60); margin:0 0 24px; font-weight:500;
+  }
+  .construct-notes .stat{
+    display:grid; grid-template-columns: 130px 1fr;
+    padding:14px 0; border-bottom:1px solid var(--rule);
+    gap:14px; align-items:baseline;
+  }
+  .construct-notes .stat dt{
+    font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-60);
+  }
+  .construct-notes .stat dd{ margin:0; font-family:var(--serif); font-size:20px; line-height:1.2; }
+  .construct-notes .stat dd em{ font-style:italic; color:var(--accent-ink); }
+  .construct-notes .stat dd .jp{ font-family:var(--jp-serif); font-style:normal; color:var(--ink-60); margin-left:8px; font-size:14px; }
+
+  /* stamp card + coaster */
+  .extras-grid{
+    display:grid; grid-template-columns: 1.3fr 1fr; gap:32px;
+    margin-top:32px;
+  }
+  .stamp-stage{
+    aspect-ratio: 16/10;
+    background:linear-gradient(135deg, #d4c8ad 0%, #b8a585 100%);
+    display:flex; align-items:center; justify-content:center;
+    padding:32px;
+  }
+  .stamp-card{
+    width:100%; max-width:520px; aspect-ratio: 1.7/1;
+    background:#efe8dc;
+    padding:24px 28px;
+    box-shadow:0 22px 30px rgba(0,0,0,.22);
+    display:grid; grid-template-columns: 1.1fr 1.6fr; gap:24px;
+    align-items:stretch;
+  }
+  .stamp-card .sc-left{
+    display:flex; flex-direction:column; gap:8px;
+    border-right:1px dashed var(--ink-20);
+    padding-right:20px;
+  }
+  .stamp-card .sc-left .mark{ font-family:var(--jp-serif); font-size:40px; line-height:1; color:var(--ink); }
+  .stamp-card .sc-left .word{ font-family:var(--serif); font-size:22px; }
+  .stamp-card .sc-left .promo{
+    margin-top:auto;
+    font-family:var(--serif); font-style:italic; font-size:13px;
+    color:var(--ink-60); line-height:1.4;
+  }
+  .stamp-card .sc-right{ display:flex; flex-direction:column; gap:10px; }
+  .stamp-card .sc-right .lbl{
+    font-family:var(--mono); font-size:9px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--ink-60); display:flex; justify-content:space-between;
+  }
+  .stamp-card .stamps{
+    display:grid; grid-template-columns: repeat(5, 1fr); gap:8px; flex:1;
+  }
+  .stamp-card .stamps .s{
+    aspect-ratio:1/1;
+    border:1px dashed var(--ink-20);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--jp-serif); font-size:18px; color:transparent;
+  }
+  .stamp-card .stamps .s.filled{
+    border:1px solid transparent; color:#fff;
+  }
+  .stamp-card .stamps .s.copper{ background:var(--copper); }
+  .stamp-card .stamps .s.green{ background:var(--green); }
+  .stamp-card .stamps .s.wine{ background:var(--wine); }
+
+  .coaster-stage{
+    aspect-ratio: 1/1;
+    background:
+      radial-gradient(120% 80% at 50% 0%, #2a241a 0%, #181410 70%);
+    display:flex; align-items:center; justify-content:center;
+    padding:32px;
+  }
+  .coaster{
+    width:80%; aspect-ratio:1/1;
+    border-radius:50%;
+    background:
+      radial-gradient(circle at 35% 30%, #f6efe1 0%, #e1d6bb 65%, #c8b896 100%);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    box-shadow:
+      inset 0 -8px 24px rgba(0,0,0,.15),
+      inset 0 2px 0 rgba(255,255,255,.5),
+      0 30px 50px rgba(0,0,0,.5);
+    position:relative; color:var(--ink);
+  }
+  .coaster::before{
+    content:""; position:absolute; inset:8%;
+    border:1px solid rgba(26,26,26,.18); border-radius:50%;
+  }
+  .coaster .mark{ font-family:var(--jp-serif); font-size:clamp(60px,7vw,110px); line-height:1; color:var(--copper); }
+  .coaster .word{ font-family:var(--serif); font-size:clamp(16px,1.5vw,22px); margin-top:4px; }
+  .coaster .ring{
+    margin-top:6px; font-family:var(--mono); font-size:9px; letter-spacing:.3em;
+    text-transform:uppercase; color:var(--ink-60);
+  }
+
+  /* mobile screens */
+  .mobile-grid{
+    display:grid; grid-template-columns: repeat(3, 1fr); gap:32px;
+    margin-top:56px;
+  }
+  .phone{
+    margin:0 auto;
+    border-radius:38px;
+    background:#0e0d0b;
+    padding:8px;
+    box-shadow:0 30px 60px -30px rgba(0,0,0,.4), 0 10px 24px -10px rgba(0,0,0,.2);
+    position:relative;
+    max-width:300px;
+    width:100%;
+  }
+  .phone::before{
+    content:""; position:absolute; top:14px; left:50%; transform:translateX(-50%);
+    width:80px; height:18px; background:#0e0d0b; border-radius:0 0 12px 12px;
+    z-index:5;
+  }
+  .phone-clip{
+    aspect-ratio: 9/19;
+    background:var(--bg);
+    border-radius:30px;
+    overflow:hidden;
+    position:relative;
+  }
+  .phone-clip iframe{
+    position:absolute; top:0; left:0;
+    width:390px; height:1800px;
+    border:0;
+    transform-origin:top left;
+    pointer-events:none;
+    background:var(--bg);
+  }
+  .phone-cap{
+    margin-top:16px; text-align:center;
+    font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--ink-60);
+  }
+  .phone-cap .jp{
+    display:block; margin-top:4px; font-family:var(--jp-serif); text-transform:none;
+    letter-spacing:.12em; color:var(--ink); font-size:13px;
+  }
+
+  /* newsletter / the letter */
+  .letter-grid{
+    display:grid; grid-template-columns: 1.3fr 1fr;
+    gap:48px; margin-top:56px; align-items:start;
+  }
+  .letter-mock{
+    background:#0e0d0b;
+    padding:18px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,.08);
+  }
+  .letter-mail{
+    background:var(--bg);
+    border-radius:4px;
+    overflow:hidden;
+    color:var(--ink);
+  }
+  .letter-mail .mail-head{
+    padding:16px 24px;
+    border-bottom:1px solid var(--rule);
+    display:grid; grid-template-columns: auto 1fr; gap:6px 16px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.04em;
+    color:var(--ink-60);
+  }
+  .letter-mail .mail-head strong{ color:var(--ink); font-weight:500; }
+  .letter-mail .mail-head .subject{
+    grid-column:1/-1; margin-top:10px; padding-top:10px;
+    border-top:1px solid var(--rule);
+    font-family:var(--serif); font-size:18px; color:var(--ink); letter-spacing:0;
+  }
+  .letter-body{
+    padding:40px 48px 48px;
+  }
+  .letter-body .lh{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding-bottom:18px; border-bottom:1px solid var(--rule);
+    margin-bottom:24px;
+  }
+  .letter-body .lh .mark{ font-family:var(--jp-serif); font-size:32px; line-height:1; }
+  .letter-body .lh .week{
+    text-align:right;
+    font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-60); line-height:1.6;
+  }
+  .letter-body .lh .week strong{ color:var(--copper); display:block; }
+  .letter-body h3{
+    font-family:var(--serif); font-weight:400;
+    font-size:clamp(30px, 3.6vw, 44px); line-height:1.05;
+    margin:0 0 8px; letter-spacing:-.01em;
+  }
+  .letter-body h3 em{ font-style:italic; color:var(--accent-ink); }
+  .letter-body .jp-sub{
+    font-family:var(--jp-serif); font-size:15px; color:var(--ink-60);
+    letter-spacing:.1em; margin-bottom:24px;
+  }
+  .letter-body p{ font-size:14px; line-height:1.75; margin:0 0 12px; color:var(--ink); }
+  .letter-body .specs{
+    margin:20px 0; padding:16px 0;
+    border-top:1px solid var(--rule); border-bottom:1px solid var(--rule);
+    display:grid; grid-template-columns: auto 1fr;
+    gap:8px 18px;
+    font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--ink-60);
+  }
+  .letter-body .specs dt{ color:var(--ink); }
+  .letter-body .specs dd{ margin:0; }
+  .letter-body .cta{
+    display:inline-flex; align-items:center; gap:10px;
+    padding:11px 18px;
+    background:var(--ink); color:var(--bg);
+    font-size:11px; letter-spacing:.06em;
+    border-radius:999px; margin-top:6px;
+  }
+  .letter-body .foot{
+    margin-top:32px; padding-top:20px;
+    border-top:1px solid var(--rule);
+    font-family:var(--mono); font-size:9px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-60); display:flex; justify-content:space-between; gap:18px;
+  }
+  .letter-body .foot .jp{ font-family:var(--jp-serif); text-transform:none; letter-spacing:.16em; color:var(--ink); }
+
+  .letter-side h3{
+    font-family:var(--serif); font-weight:400;
+    font-size:clamp(28px, 3.2vw, 40px); line-height:1.1;
+    margin:0 0 18px; letter-spacing:-.005em;
+  }
+  .letter-side h3 em{ font-style:italic; color:var(--accent-ink); }
+  .letter-side p{ font-size:16px; line-height:1.7; color:var(--ink); max-width:42ch; margin:0 0 18px; }
+  .letter-side .principles{
+    margin-top:24px; border-top:1px solid var(--rule);
+  }
+  .letter-side .principles .row{
+    display:grid; grid-template-columns: 28px 1fr;
+    gap:18px; padding:16px 0; border-bottom:1px solid var(--rule);
+    align-items:baseline;
+  }
+  .letter-side .principles .n{
+    font-family:var(--mono); font-size:11px; letter-spacing:.14em;
+    color:var(--ink-40);
+  }
+  .letter-side .principles .name{
+    font-family:var(--serif); font-style:italic; font-size:20px;
+    color:var(--ink);
+  }
+  .letter-side .principles .name .desc{
+    display:block;
+    font-family:var(--sans); font-style:normal; font-size:13px;
+    color:var(--ink-60); margin-top:4px;
+  }
+
+  /* ╳╳╳ HOMEPAGE SCREENS ╳╳╳ */
   .screen{
     border-radius:8px;
     overflow:hidden;
@@ -1076,6 +1384,8 @@
     .palette{ grid-template-columns: 1fr 1fr; }
     .type-grid{ grid-template-columns:1fr; }
     .moodboard-grid{ grid-template-columns:repeat(6, 1fr); grid-auto-rows:80px; }
+    .construct, .extras-grid, .letter-grid{ grid-template-columns:1fr; }
+    .mobile-grid{ grid-template-columns: 1fr 1fr; }
   }
 </style>
 </head>
@@ -1327,6 +1637,36 @@
       </div>
     </div>
 
+    <div class="construct">
+      <div class="construct-frame">
+        <span class="tick cap">construction</span>
+        <span class="tick tl">x-height · 720u</span>
+        <span class="tick tr">cap height · 1000u</span>
+        <span class="tick bl">baseline</span>
+        <span class="tick br">strokes · 9</span>
+        <div class="grid"></div>
+        <div class="axes"></div>
+        <div class="bounds"></div>
+        <div class="glyph" lang="ja">骨</div>
+      </div>
+
+      <div class="construct-notes">
+        <h4>Construction · the mark on an 8×8 grid</h4>
+        <dl style="margin:0;">
+          <div class="stat"><dt>character</dt><dd>骨 <span class="jp" lang="ja">hone / ほね</span></dd></div>
+          <div class="stat"><dt>strokes</dt><dd>9</dd></div>
+          <div class="stat"><dt>radical</dt><dd>骨 <span class="jp" lang="ja">bone, 188</span></dd></div>
+          <div class="stat"><dt>typeface</dt><dd>Shippori Mincho B1 <em>500</em></dd></div>
+          <div class="stat"><dt>clear space</dt><dd><em>2u</em> on every side</dd></div>
+          <div class="stat"><dt>minimum size</dt><dd>20px / <em>10mm</em></dd></div>
+          <div class="stat"><dt>colour</dt><dd>ink · or week’s accent</dd></div>
+        </dl>
+        <p style="margin-top:24px; font-family:var(--serif); font-style:italic; font-size:18px; color:var(--ink-60); line-height:1.5;">
+          “the character is asymmetric on purpose. it leans slightly right, like it’s about to fall but won’t.”
+        </p>
+      </div>
+    </div>
+
     <div class="logo-variants">
       <div class="lv cream"><span class="mark" lang="ja">骨</span><span class="word">hone</span><span class="corner">cream / primary</span></div>
       <div class="lv dark"><span class="mark" lang="ja">骨</span><span class="word">hone</span><span class="corner">ink / inverted</span></div>
@@ -1527,6 +1867,36 @@
       </div>
     </div>
 
+    <!-- 07 MOBILE -->
+    <div style="margin-top:96px;">
+      <div style="display:flex; justify-content:space-between; align-items:baseline; padding-bottom:18px; border-bottom:1px solid var(--rule); margin-bottom:8px;">
+        <h3 style="font-family:var(--serif); font-weight:400; font-size:clamp(28px, 3.2vw, 40px); margin:0; letter-spacing:-.005em;">on a phone, <em style="font-style:italic; color:var(--accent-ink);">the same quiet.</em></h3>
+        <span class="chapter">04 · 07 / responsive</span>
+      </div>
+      <p style="max-width:54ch; color:var(--ink-60); font-size:16px; line-height:1.6; margin:0 0 24px;">below 960px the hero stacks, the tategaki rail folds away, and the bean rows collapse to a tighter list. nothing else changes — the cream stays cream, the mincho stays mincho.</p>
+
+      <div class="mobile-grid">
+        <div>
+          <div class="phone">
+            <div class="phone-clip"><iframe src="Hone.html" loading="lazy" title="hone mobile — hero"></iframe></div>
+          </div>
+          <div class="phone-cap">hero<span class="jp" lang="ja">ホーム</span></div>
+        </div>
+        <div>
+          <div class="phone">
+            <div class="phone-clip"><iframe src="Hone.html#beans" loading="lazy" title="hone mobile — now pouring"></iframe></div>
+          </div>
+          <div class="phone-cap">now pouring<span class="jp" lang="ja">今週の豆</span></div>
+        </div>
+        <div>
+          <div class="phone">
+            <div class="phone-clip"><iframe src="Hone.html#visit" loading="lazy" title="hone mobile — visit"></iframe></div>
+          </div>
+          <div class="phone-cap">visit<span class="jp" lang="ja">ご来店</span></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -1628,10 +1998,47 @@
       </div>
     </div>
 
+    <div class="extras-grid">
+      <!-- stamp / loyalty card -->
+      <div class="sign-cell">
+        <span class="corner">05 · stamp card · スタンプカード</span>
+        <div class="stamp-stage">
+          <div class="stamp-card">
+            <div class="sc-left">
+              <span class="mark" lang="ja">骨</span>
+              <span class="word">hone</span>
+              <span class="promo">five cups,<br>the sixth on us.<br><span style="font-family:var(--jp-serif); font-style:normal; font-size:11px; color:var(--ink-40); letter-spacing:.12em;" lang="ja">五杯で一杯</span></span>
+            </div>
+            <div class="sc-right">
+              <span class="lbl"><span>京都 · hone.kyoto</span><span>05 / 06</span></span>
+              <div class="stamps">
+                <span class="s filled copper" lang="ja">骨</span>
+                <span class="s filled copper" lang="ja">骨</span>
+                <span class="s filled green" lang="ja">骨</span>
+                <span class="s filled wine" lang="ja">骨</span>
+                <span class="s filled copper" lang="ja">骨</span>
+              </div>
+              <span class="lbl" style="justify-content:flex-end;"><span>one stamp per cup · no expiry</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- coaster -->
+      <div class="sign-cell">
+        <span class="corner">06 · coaster · コースター</span>
+        <div class="coaster-stage">
+          <div class="coaster">
+            <span class="mark" lang="ja">骨</span>
+            <span class="word">hone</span>
+            <span class="ring" lang="ja">京都 · kyoto</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
-
-<!-- ╳╳╳ 06 · MENU ╳╳╳ -->
 <section class="menu">
   <div class="wrap">
     <div class="section-head">
@@ -1951,6 +2358,69 @@
         </div>
       </div>
     </div>
+    <!-- the letter / newsletter -->
+    <div class="letter-grid">
+      <div class="letter-mock">
+        <div class="letter-mail">
+          <div class="mail-head">
+            <span>from</span><strong>hone, kyoto &lt;letter@hone.kyoto&gt;</strong>
+            <span>to</span><span>you, on a sunday</span>
+            <div class="subject">the bar this week — ethiopia konga, jasmine and white peach.</div>
+          </div>
+
+          <div class="letter-body">
+            <div class="lh">
+              <span class="mark" lang="ja">骨</span>
+              <span class="week"><strong>the letter · お便り</strong>week 20 · 17 may 2026</span>
+            </div>
+
+            <h3>a small note from <em>kamogawa.</em></h3>
+            <div class="jp-sub" lang="ja">鴨川から、少しだけ。</div>
+
+            <p>the konga is twelve days off roast and pouring at its best. it reads like cold jasmine tea if you brew it thin — push the ratio a little and the white peach steps forward.</p>
+            <p>two seats opened up in thursday’s class. the four cup method. grind, water, ratio, time. bring nothing.</p>
+
+            <dl class="specs">
+              <dt>on the bar</dt><dd>ethiopia konga, washed</dd>
+              <dt>next class</dt><dd>thu 21 may · 14:00 · 2 seats</dd>
+              <dt>closed</dt><dd>wed 20 may</dd>
+            </dl>
+
+            <a class="cta">read the recipe <span>→</span></a>
+
+            <div class="foot">
+              <span class="jp" lang="ja">骨 · 京都</span>
+              <span>unsubscribe · view in browser</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="letter-side">
+        <h3>plain text in a serif. <em>nothing else.</em></h3>
+        <p>the letter is the slowest revenue surface but the closest to the brand. one email every other sunday, sent before the shop opens. no banner image, no buttons that look like buttons, no “did you miss us?”.</p>
+
+        <div class="principles">
+          <div class="row">
+            <span class="n">01</span>
+            <span class="name">a single bean<span class="desc">whatever is on the bar that week, written about the way Ren talks about it.</span></span>
+          </div>
+          <div class="row">
+            <span class="n">02</span>
+            <span class="name">the next class<span class="desc">one line. seats remaining. no urgency typography.</span></span>
+          </div>
+          <div class="row">
+            <span class="n">03</span>
+            <span class="name">one photograph<span class="desc">attached, not embedded. of kamogawa, taken that morning.</span></span>
+          </div>
+          <div class="row">
+            <span class="n">04</span>
+            <span class="name">an unsubscribe link<span class="desc">in the same size as the body. dignified leave-taking.</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -1996,15 +2466,25 @@
 </footer>
 
 <script>
-  /* iframe scaling — fit a 1440-wide page inside any container */
+  /* iframe scaling — fit a fixed-width page inside any container */
   function scaleScreens(){
+    // desktop screens: 1440 base
     document.querySelectorAll('.screen-clip').forEach(clip => {
       const iframe = clip.querySelector('iframe');
       if (!iframe) return;
       const w = clip.getBoundingClientRect().width;
       const scale = w / 1440;
       iframe.style.transform = `scale(${scale})`;
-      // size iframe tall enough that the scaled height fills the clip
+      const clipH = clip.getBoundingClientRect().height;
+      iframe.style.height = (clipH / scale) + 'px';
+    });
+    // mobile phones: 390 base
+    document.querySelectorAll('.phone-clip').forEach(clip => {
+      const iframe = clip.querySelector('iframe');
+      if (!iframe) return;
+      const w = clip.getBoundingClientRect().width;
+      const scale = w / 390;
+      iframe.style.transform = `scale(${scale})`;
       const clipH = clip.getBoundingClientRect().height;
       iframe.style.height = (clipH / scale) + 'px';
     });
@@ -2013,23 +2493,23 @@
   window.addEventListener('load', scaleScreens);
   scaleScreens();
 
-  /* iframe scroll positioning — scroll to hash with a small offset
-     so the sticky nav doesn't sit on top of the section header */
-  document.querySelectorAll('.screen-clip iframe').forEach(iframe => {
+  /* iframe scroll positioning */
+  document.querySelectorAll('.screen-clip iframe, .phone-clip iframe').forEach(iframe => {
     iframe.addEventListener('load', () => {
       try {
         const hash = (iframe.src.split('#')[1] || '').trim();
-        if (!hash) return;
-        const doc = iframe.contentDocument;
-        const win = iframe.contentWindow;
-        if (!doc || !win) return;
-        const target = doc.getElementById(hash);
-        if (target){
-          const top = target.getBoundingClientRect().top + win.scrollY - 90;
-          win.scrollTo(0, Math.max(0, top));
+        if (hash){
+          const doc = iframe.contentDocument;
+          const win = iframe.contentWindow;
+          if (doc && win){
+            const target = doc.getElementById(hash);
+            if (target){
+              const top = target.getBoundingClientRect().top + win.scrollY - 90;
+              win.scrollTo(0, Math.max(0, top));
+            }
+          }
         }
-      } catch(e) { /* cross-origin safety */ }
-      // re-scale after content settles
+      } catch(e) {}
       setTimeout(scaleScreens, 200);
     });
   });
